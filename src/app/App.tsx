@@ -1,11 +1,11 @@
 import { Routes, Route } from 'react-router-dom';
-import HomeScreen from './HomeScreen';
+import AppLayout from './AppLayout';
 import LoginScreen from './LoginScreen';
+import DashboardScreen from '@/features/dashboard/DashboardScreen';
 import PlantsScreen from '@/features/inventory/PlantsScreen';
 import AddStockScreen from '@/features/inventory/AddStockScreen';
 import CreateBillScreen from '@/features/billing/CreateBillScreen';
 import StockValueScreen from '@/features/stockValue/StockValueScreen';
-import OwnerDashboard from '@/features/dashboard/OwnerDashboard';
 import { useData } from '@/state/DataProvider';
 
 export default function App() {
@@ -27,12 +27,13 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<HomeScreen />} />
-      <Route path="/plants" element={<PlantsScreen />} />
-      <Route path="/add" element={<AddStockScreen />} />
-      <Route path="/bill" element={<CreateBillScreen />} />
-      <Route path="/value" element={<StockValueScreen />} />
-      <Route path="/dashboard" element={<OwnerDashboard />} />
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<DashboardScreen />} />
+        <Route path="/plants" element={<PlantsScreen />} />
+        <Route path="/add" element={<AddStockScreen />} />
+        <Route path="/bill" element={<CreateBillScreen />} />
+        <Route path="/value" element={<StockValueScreen />} />
+      </Route>
     </Routes>
   );
 }

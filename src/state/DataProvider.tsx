@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { Bill, Plant, Role } from '@/types';
+import type { Bill, Plant } from '@/types';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, isFirebaseConfigured, signInWithGoogle, signOutUser } from '@/lib/firebase';
 import { watchBills, watchPlants } from '@/lib/repository';
@@ -17,10 +17,6 @@ interface DataContextValue {
   authChecked: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
-  /** Owner unlocks the dashboard with the PIN; resets on reload. */
-  role: Role;
-  unlockOwner: () => void;
-  lockOwner: () => void;
 }
 
 const DataContext = createContext<DataContextValue | null>(null);
@@ -29,7 +25,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [plants, setPlants] = useState<Plant[]>([]);
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<Role>('farmer');
   const [user, setUser] = useState<User | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
 
@@ -79,11 +74,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       authChecked,
       signIn: signInWithGoogle,
       signOut: signOutUser,
-      role,
-      unlockOwner: () => setRole('owner'),
-      lockOwner: () => setRole('farmer'),
     }),
-    [plants, bills, loading, role, user, authChecked],
+    [plants, bills, loading, user, authChecked],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

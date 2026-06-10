@@ -1,24 +1,28 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 
 /** Shared UI primitives — large tap targets & readable text (PRD §2). */
 
-export function Screen({ title, children }: { title: string; children: ReactNode }) {
-  const navigate = useNavigate();
+export function Screen({
+  title,
+  subtitle,
+  actions,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  actions?: ReactNode;
+  children: ReactNode;
+}) {
   return (
-    <div className="min-h-full bg-[var(--color-mint)] pb-24">
-      <header className="sticky top-0 z-10 flex items-center gap-3 bg-[var(--color-leaf)] px-4 py-4 text-white shadow">
-        <button
-          onClick={() => navigate('/')}
-          aria-label="Back to home"
-          className="rounded-full p-2 hover:bg-white/15"
-        >
-          <ArrowLeft size={26} />
-        </button>
-        <h1 className="text-xl font-bold">{title}</h1>
-      </header>
-      <main className="mx-auto max-w-xl px-4 py-4">{children}</main>
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
+      <div className="mb-5 flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
+          {subtitle && <p className="mt-0.5 text-gray-500">{subtitle}</p>}
+        </div>
+        {actions}
+      </div>
+      {children}
     </div>
   );
 }

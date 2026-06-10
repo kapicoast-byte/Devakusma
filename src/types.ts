@@ -35,5 +35,3 @@ export interface Bill {
   grandTotal: number;
   createdAt: number;
 }
-
-export type Role = 'farmer' | 'owner';
