@@ -38,6 +38,28 @@ export function searchPlants(plants: Plant[], query: string): Plant[] {
 export const lowStockEntries = (plants: Plant[]): Plant[] =>
   plants.filter((p) => p.quantity < p.minThreshold);
 
+/** Group inventory entries by plant name, with each plant's size variants nested. */
+export interface PlantGroup {
+  plantName: string;
+  variants: Plant[];
+  totalQuantity: number;
+}
+export function groupByPlant(plants: Plant[]): PlantGroup[] {
+  const map = new Map<string, Plant[]>();
+  for (const p of plants) {
+    const arr = map.get(p.plantName) ?? [];
+    arr.push(p);
+    map.set(p.plantName, arr);
+  }
+  return [...map.entries()]
+    .map(([plantName, variants]) => ({
+      plantName,
+      variants: variants.sort((a, b) => a.size.localeCompare(b.size, undefined, { numeric: true })),
+      totalQuantity: variants.reduce((s, v) => s + v.quantity, 0),
+    }))
+    .sort((a, b) => a.plantName.localeCompare(b.plantName));
+}
+
 /** Format ₹ in Indian numbering (e.g. ₹1,41,500). */
 export const formatRupees = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN').format(Math.round(n))}`;

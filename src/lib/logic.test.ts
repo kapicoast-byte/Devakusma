@@ -5,6 +5,7 @@ import {
   totalStockValue,
   searchPlants,
   lowStockEntries,
+  groupByPlant,
   formatRupees,
   formatInvoiceNo,
   billGrandTotal,
@@ -50,6 +51,14 @@ describe('inventory logic', () => {
   it('flags low stock below threshold', () => {
     const low = lowStockEntries([plant({ id: 'l', quantity: 8, minThreshold: 20 })]);
     expect(low).toHaveLength(1);
+  });
+
+  it('groups variants by plant with totals', () => {
+    const groups = groupByPlant(plants);
+    expect(groups).toHaveLength(3); // Areca Palm, Croton, Ficus
+    const areca = groups.find((g) => g.plantName === 'Areca Palm')!;
+    expect(areca.variants).toHaveLength(2);
+    expect(areca.totalQuantity).toBe(330); // 250 + 80
   });
 });
 

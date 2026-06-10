@@ -26,8 +26,12 @@ export default function CreateBillScreen() {
   const [qty, setQty] = useState('');
 
   const plantNames = useMemo(() => [...new Set(plants.map((p) => p.plantName))].sort(), [plants]);
-  const sizesForPlant = useMemo(
-    () => plants.filter((p) => p.plantName === plantName && p.quantity > 0).map((p) => p.size),
+  // Size variants (with stock) for the chosen plant — shown as tappable chips.
+  const variantsForPlant = useMemo(
+    () =>
+      plants
+        .filter((p) => p.plantName === plantName && p.quantity > 0)
+        .sort((a, b) => a.size.localeCompare(b.size, undefined, { numeric: true })),
     [plants, plantName],
   );
   const entry = findEntry(plants, plantName, size); // rate comes from here — never typed
@@ -108,14 +112,37 @@ export default function CreateBillScreen() {
         }}
         options={plantNames.map((n) => ({ value: n, label: n }))}
       />
-      <Select
-        label="Size"
-        placeholder={plantName ? 'Select a size' : 'Pick a plant first'}
-        value={size}
-        onChange={(e) => setSize(e.target.value)}
-        disabled={!plantName}
-        options={sizesForPlant.map((s) => ({ value: s, label: s }))}
-      />
+
+      {plantName && (
+        <div className="mb-4">
+          <span className="mb-1 block text-base font-semibold text-gray-700">Size</span>
+          {variantsForPlant.length === 0 ? (
+            <p className="text-gray-500">No stock available for this plant.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {variantsForPlant.map((v) => {
+                const selected = v.size === size;
+                return (
+                  <button
+                    key={v.id}
+                    onClick={() => setSize(v.size)}
+                    className={`rounded-xl border-2 px-4 py-2 text-left transition ${
+                      selected
+                        ? 'border-[var(--color-leaf)] bg-[var(--color-leaf)] text-white'
+                        : 'border-[var(--color-mint-border)] bg-white text-gray-700 hover:bg-[var(--color-mint)]'
+                    }`}
+                  >
+                    <div className="font-bold leading-tight">{v.size}</div>
+                    <div className={`text-xs ${selected ? 'text-white/90' : 'text-gray-500'}`}>
+                      {formatRupees(v.sellingPrice)} · {v.quantity} left
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
       <div className="mb-3 flex items-end gap-3">
         <div className="flex-1">
           <Field label="Quantity" type="number" inputMode="numeric" value={qty} onChange={(e) => setQty(e.target.value)} placeholder="Qty" />

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Search, Plus, Upload } from 'lucide-react';
 import { Screen, Card, Modal } from '@/components/ui';
 import { useData } from '@/state/DataProvider';
-import { searchPlants, formatRupees } from '@/lib/logic';
+import { searchPlants, formatRupees, groupByPlant } from '@/lib/logic';
 import AddStockForm from './AddStockForm';
 import BulkUpload from './BulkUpload';
 import type { Plant } from '@/types';
@@ -27,7 +27,7 @@ export default function InventoryScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const results = useMemo(() => searchPlants(plants, q), [plants, q]);
+  const groups = useMemo(() => groupByPlant(searchPlants(plants, q)), [plants, q]);
 
   return (
     <Screen
@@ -64,51 +64,62 @@ export default function InventoryScreen() {
 
       {loading ? (
         <p className="text-center text-gray-500">Loading…</p>
-      ) : results.length === 0 ? (
+      ) : groups.length === 0 ? (
         <p className="text-center text-gray-500">
           {plants.length === 0 ? 'No plants yet. Tap “Add Stock” to begin.' : 'No plants found.'}
         </p>
       ) : (
-        <ul className="space-y-3">
-          {results.map((p) => {
-            const low = p.quantity < p.minThreshold;
-            return (
-              <li key={p.id}>
-                <Card className={low ? 'border-red-300' : ''}>
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="text-lg font-bold text-gray-800">{p.plantName}</div>
-                      <div className="text-gray-500">{p.size}</div>
-                      {low && (
-                        <div className="mt-1 text-sm font-semibold text-red-600">
-                          ⚠️ Low stock (below {p.minThreshold})
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <div
-                          className={`text-xl font-extrabold ${
-                            low ? 'text-red-600' : 'text-[var(--color-leaf)]'
-                          }`}
-                        >
-                          {p.quantity}
-                        </div>
-                        <div className="text-sm text-gray-500">{formatRupees(p.sellingPrice)}</div>
-                      </div>
-                      <button
-                        onClick={() => setQuickAdd(p)}
-                        aria-label={`Add stock to ${p.plantName} ${p.size}`}
-                        className="flex items-center gap-1 rounded-xl border-2 border-[var(--color-leaf)] px-3 py-2 font-semibold text-[var(--color-leaf)] transition hover:bg-[var(--color-mint)]"
-                      >
-                        <Plus size={18} /> Add
-                      </button>
-                    </div>
+        <ul className="space-y-4">
+          {groups.map((g) => (
+            <li key={g.plantName}>
+              <Card className="!p-0 overflow-hidden">
+                {/* Plant header */}
+                <div className="flex items-center justify-between bg-[var(--color-mint)] px-4 py-3">
+                  <div className="text-lg font-bold text-gray-800">{g.plantName}</div>
+                  <div className="text-sm font-semibold text-gray-600">
+                    {g.totalQuantity} in stock · {g.variants.length} size
+                    {g.variants.length === 1 ? '' : 's'}
                   </div>
-                </Card>
-              </li>
-            );
-          })}
+                </div>
+
+                {/* Size variants */}
+                <ul className="divide-y divide-gray-100">
+                  {g.variants.map((v) => {
+                    const low = v.quantity < v.minThreshold;
+                    return (
+                      <li key={v.id} className="flex items-center justify-between gap-3 px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-lg bg-gray-100 px-2.5 py-1 font-semibold text-gray-700">
+                            {v.size}
+                          </span>
+                          <span className="text-gray-500">{formatRupees(v.sellingPrice)}</span>
+                          {low && (
+                            <span className="text-sm font-semibold text-red-600">⚠️ Low</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`text-lg font-extrabold ${
+                              low ? 'text-red-600' : 'text-[var(--color-leaf)]'
+                            }`}
+                          >
+                            {v.quantity}
+                          </span>
+                          <button
+                            onClick={() => setQuickAdd(v)}
+                            aria-label={`Add stock to ${v.plantName} ${v.size}`}
+                            className="flex items-center gap-1 rounded-lg border-2 border-[var(--color-leaf)] px-2.5 py-1.5 text-sm font-semibold text-[var(--color-leaf)] transition hover:bg-[var(--color-mint)]"
+                          >
+                            <Plus size={16} /> Add
+                          </button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Card>
+            </li>
+          ))}
         </ul>
       )}
 
