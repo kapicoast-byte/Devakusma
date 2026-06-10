@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Bill, BillItem, Plant } from '@/types';
+import type { CompanyProfile } from './company';
 import { formatInvoiceNo, norm } from './logic';
 
 /**
@@ -179,4 +180,16 @@ export async function getBillsBetween(startMs: number, endMs: number): Promise<B
 /** Read or initialise app settings (owner PIN, nursery details). */
 export async function saveSetting(key: string, value: unknown): Promise<void> {
   await setDoc(doc(db, 'settings', key), { value }, { merge: true });
+}
+
+/** Live subscription to the company profile (settings/company). */
+export function watchCompany(cb: (profile: Partial<CompanyProfile>) => void): () => void {
+  return onSnapshot(doc(db, 'settings', 'company'), (snap) => {
+    cb((snap.data() as Partial<CompanyProfile>) ?? {});
+  });
+}
+
+/** Save the company profile. */
+export async function saveCompany(profile: CompanyProfile): Promise<void> {
+  await setDoc(doc(db, 'settings', 'company'), profile, { merge: true });
 }

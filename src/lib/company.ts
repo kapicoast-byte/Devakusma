@@ -1,10 +1,9 @@
 /**
- * Company profile shown on the Bill (PDF header).
+ * Company profile shown on the Bill / Report PDFs.
  *
- * For now these are static defaults. The upcoming "Company Profile" module will
- * let the owner edit these and store them in Firestore (settings/company), after
- * which `getCompanyProfile()` can read the saved values. The bill PDF already
- * reads from here, so no invoice changes will be needed then.
+ * The values are edited on the Company Profile screen and stored in Firestore
+ * (settings/company). A module-level cache lets the PDF builders read the
+ * profile synchronously; DataProvider keeps it hydrated from Firestore.
  */
 export interface CompanyProfile {
   name: string;
@@ -13,18 +12,23 @@ export interface CompanyProfile {
   phone?: string;
   email?: string;
   gstin?: string;
+  /** Logo as a small data URL (resized on upload). */
+  logo?: string;
 }
 
-export const companyProfile: CompanyProfile = {
+export const DEFAULT_COMPANY: CompanyProfile = {
   name: 'Devakusuma Nursery Gardens',
   tagline: 'Plants for every garden',
-  address: '',
-  phone: '',
-  email: '',
-  gstin: '',
 };
 
-/** Single source of truth for the company details used across the app. */
+let current: CompanyProfile = DEFAULT_COMPANY;
+
+/** Synchronous read of the current company profile (used by PDF builders). */
 export function getCompanyProfile(): CompanyProfile {
-  return companyProfile;
+  return current;
+}
+
+/** Update the in-memory cache (called by DataProvider from the Firestore listener). */
+export function setCompanyProfileCache(profile: Partial<CompanyProfile>): void {
+  current = { ...DEFAULT_COMPANY, ...profile };
 }

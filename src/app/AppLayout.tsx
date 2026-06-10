@@ -8,6 +8,7 @@ import {
   ReceiptText,
   FileText,
   IndianRupee,
+  Store,
   LogOut,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -35,6 +36,7 @@ export default function AppLayout() {
     { to: '/bill', label: 'Create Bill', icon: ReceiptText },
     { to: '/bills', label: 'Bills', icon: FileText },
     { to: '/value', label: 'Stock Value', icon: IndianRupee },
+    { to: '/profile', label: 'Company Profile', icon: Store },
   ];
 
   const closeOnMobile = () => {

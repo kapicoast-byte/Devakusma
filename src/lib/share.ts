@@ -1,12 +1,13 @@
 import type { Bill } from '@/types';
 import { formatRupees } from './logic';
 import { invoiceAsFile } from './invoice';
+import { getCompanyProfile } from './company';
 
 /** Plain-text summary used as the WhatsApp message body. */
 function billMessage(bill: Bill): string {
   const lines = bill.items.map((it) => `• ${it.plantName} ${it.size} × ${it.qty} = ${formatRupees(it.lineTotal)}`);
   return [
-    `🌿 Devakusuma Nursery Gardens`,
+    `🌿 ${getCompanyProfile().name}`,
     `Invoice ${bill.invoiceNo}`,
     `Customer: ${bill.customerName}`,
     '',

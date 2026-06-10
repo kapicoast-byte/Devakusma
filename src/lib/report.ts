@@ -4,6 +4,7 @@ import type { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 import type { Bill, Plant } from '@/types';
 import { formatRupees, lowStockEntries } from './logic';
 import { billsInPeriod, revenue, rankPlantsBySales, inventorySummary } from './analytics';
+import { getCompanyProfile } from './company';
 
 pdfMake.vfs = (pdfFonts as unknown as { vfs: Record<string, string> }).vfs;
 
@@ -23,7 +24,7 @@ export function downloadMonthlyReport(bills: Bill[], plants: Plant[]): void {
   const doc: TDocumentDefinitions = {
     pageMargins: [40, 50, 40, 50],
     content: [
-      { text: '🌿 Devakusuma Nursery Gardens', fontSize: 20, bold: true, color: '#1B5E20' },
+      { text: getCompanyProfile().name, fontSize: 20, bold: true, color: '#1B5E20' },
       { text: `Monthly Business Report — ${monthName}`, fontSize: 12, color: '#666' },
 
       ...section('Total Sales Revenue', {

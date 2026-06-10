@@ -19,9 +19,9 @@ function buildDoc(bill: Bill): TDocumentDefinitions {
     year: 'numeric',
   });
 
-  // Company details block (populated by the Company Profile module later).
+  // Company details block (from the Company Profile screen).
   const companyLines: Content[] = [
-    { text: `🌿 ${company.name}`, fontSize: 20, bold: true, color: '#1B5E20' },
+    { text: company.name, fontSize: 20, bold: true, color: '#1B5E20' },
   ];
   if (company.tagline) companyLines.push({ text: company.tagline, fontSize: 10, color: '#666' });
   if (company.address) companyLines.push({ text: company.address, fontSize: 10, color: '#444' });
@@ -29,10 +29,19 @@ function buildDoc(bill: Bill): TDocumentDefinitions {
   if (contact) companyLines.push({ text: contact, fontSize: 10, color: '#444' });
   if (company.gstin) companyLines.push({ text: `GSTIN: ${company.gstin}`, fontSize: 10, color: '#444' });
 
+  const header: Content = company.logo
+    ? {
+        columns: [
+          { image: company.logo, width: 56, height: 56, fit: [56, 56] },
+          { stack: companyLines, margin: [10, 0, 0, 0] },
+        ],
+      }
+    : { stack: companyLines };
+
   return {
     pageMargins: [40, 50, 40, 50],
     content: [
-      ...companyLines,
+      header,
       { text: 'Bill', fontSize: 12, color: '#666', margin: [0, 6, 0, 12] },
       {
         columns: [
