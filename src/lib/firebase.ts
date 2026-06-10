@@ -39,6 +39,8 @@ if (isFirebaseConfigured) {
   app = initializeApp(firebaseConfig);
   dbInstance = initializeFirestore(app, {
     localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    // Drop undefined fields (e.g. an empty optional mobile) instead of erroring.
+    ignoreUndefinedProperties: true,
   });
   authInstance = getAuth(app);
 } else {
