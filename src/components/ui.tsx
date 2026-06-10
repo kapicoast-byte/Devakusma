@@ -1,4 +1,9 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode } from 'react';
+import type {
+  ButtonHTMLAttributes,
+  InputHTMLAttributes,
+  ReactNode,
+  SelectHTMLAttributes,
+} from 'react';
 
 /** Shared UI primitives — large tap targets & readable text (PRD §2). */
 
@@ -52,6 +57,42 @@ export function Field({
         {...props}
         className="w-full rounded-xl border-2 border-[var(--color-mint-border)] bg-white px-4 py-3 text-lg outline-none focus:border-[var(--color-leaf)]"
       />
+    </label>
+  );
+}
+
+export function Select({
+  label,
+  options,
+  placeholder,
+  ...props
+}: SelectHTMLAttributes<HTMLSelectElement> & {
+  label: string;
+  placeholder?: string;
+  options: { value: string; label: string }[];
+}) {
+  return (
+    <label className="mb-4 block">
+      <span className="mb-1 block text-base font-semibold text-gray-700">{label}</span>
+      <select
+        {...props}
+        className="w-full appearance-none rounded-xl border-2 border-[var(--color-mint-border)] bg-white bg-[right_0.75rem_center] bg-no-repeat px-4 py-3 text-lg outline-none focus:border-[var(--color-leaf)]"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%231B5E20' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
+        }}
+      >
+        {placeholder && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
     </label>
   );
 }

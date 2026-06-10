@@ -1,26 +1,42 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Screen, Field, PrimaryButton } from '@/components/ui';
+import { Screen, Field, Select, PrimaryButton } from '@/components/ui';
 import { useData } from '@/state/DataProvider';
 import { addStock } from '@/lib/repository';
 import { findEntry } from '@/lib/logic';
 
-/** Module 03 — Add new stock (merges into existing plant+size, or creates new). */
+const NEW = '__new__';
+
+/** Module 03 — Add new stock. Pick from inventory or add a brand-new plant/size. */
 export default function AddStockScreen() {
   const navigate = useNavigate();
   const { plants } = useData();
-  const [plantName, setPlantName] = useState('');
-  const [size, setSize] = useState('');
+
+  const [plantSel, setPlantSel] = useState('');
+  const [plantNew, setPlantNew] = useState('');
+  const [sizeSel, setSizeSel] = useState('');
+  const [sizeNew, setSizeNew] = useState('');
   const [quantity, setQuantity] = useState('');
   const [price, setPrice] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  const plantNames = useMemo(
-    () => [...new Set(plants.map((p) => p.plantName))].sort(),
-    [plants],
+  const plantNames = useMemo(() => [...new Set(plants.map((p) => p.plantName))].sort(), [plants]);
+
+  const isNewPlant = plantSel === NEW;
+  const plantName = (isNewPlant ? plantNew : plantSel).trim();
+
+  // Sizes already stocked for the selected (existing) plant.
+  const sizesForPlant = useMemo(
+    () =>
+      isNewPlant
+        ? []
+        : [...new Set(plants.filter((p) => p.plantName === plantSel).map((p) => p.size))].sort(),
+    [plants, plantSel, isNewPlant],
   );
-  const sizes = useMemo(() => [...new Set(plants.map((p) => p.size))].sort(), [plants]);
+  const sizeIsFreeText = isNewPlant || sizesForPlant.length === 0;
+  const isNewSize = sizeIsFreeText || sizeSel === NEW;
+  const size = (isNewSize ? sizeNew : sizeSel).trim();
 
   // Show the current price when the worker picks an existing plant+size.
   const existing = findEntry(plants, plantName, size);
@@ -29,7 +45,7 @@ export default function AddStockScreen() {
     setError('');
     const qty = Number(quantity);
     const pr = Number(price);
-    if (!plantName.trim() || !size.trim()) return setError('Enter a plant name and size.');
+    if (!plantName || !size) return setError('Choose a plant and size.');
     if (!Number.isFinite(qty) || qty <= 0) return setError('Enter a valid quantity.');
     if (!Number.isFinite(pr) || pr <= 0) return setError('Enter a valid selling price.');
     setSaving(true);
@@ -44,31 +60,59 @@ export default function AddStockScreen() {
 
   return (
     <Screen title="Add Plants">
-      <datalist id="plant-names">
-        {plantNames.map((n) => (
-          <option key={n} value={n} />
-        ))}
-      </datalist>
-      <datalist id="sizes">
-        {sizes.map((s) => (
-          <option key={s} value={s} />
-        ))}
-      </datalist>
-
-      <Field
+      <Select
         label="Plant Name"
-        list="plant-names"
-        value={plantName}
-        onChange={(e) => setPlantName(e.target.value)}
-        placeholder="e.g. Areca Palm"
+        placeholder="Select a plant"
+        value={plantSel}
+        onChange={(e) => {
+          setPlantSel(e.target.value);
+          setSizeSel('');
+          setSizeNew('');
+        }}
+        options={[
+          ...plantNames.map((n) => ({ value: n, label: n })),
+          { value: NEW, label: '➕ New plant…' },
+        ]}
       />
-      <Field
-        label="Plant Size"
-        list="sizes"
-        value={size}
-        onChange={(e) => setSize(e.target.value)}
-        placeholder="e.g. 2 ft"
-      />
+      {isNewPlant && (
+        <Field
+          label="New plant name"
+          value={plantNew}
+          onChange={(e) => setPlantNew(e.target.value)}
+          placeholder="e.g. Areca Palm"
+        />
+      )}
+
+      {sizeIsFreeText ? (
+        <Field
+          label="Plant Size"
+          value={sizeNew}
+          onChange={(e) => setSizeNew(e.target.value)}
+          placeholder="e.g. 2 ft"
+        />
+      ) : (
+        <>
+          <Select
+            label="Plant Size"
+            placeholder="Select a size"
+            value={sizeSel}
+            onChange={(e) => setSizeSel(e.target.value)}
+            options={[
+              ...sizesForPlant.map((s) => ({ value: s, label: s })),
+              { value: NEW, label: '➕ New size…' },
+            ]}
+          />
+          {sizeSel === NEW && (
+            <Field
+              label="New size"
+              value={sizeNew}
+              onChange={(e) => setSizeNew(e.target.value)}
+              placeholder="e.g. 3 ft"
+            />
+          )}
+        </>
+      )}
+
       <Field
         label="Quantity to add"
         type="number"

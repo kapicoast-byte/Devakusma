@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Download, Share2, Printer } from 'lucide-react';
-import { Screen, Field, PrimaryButton, Card } from '@/components/ui';
+import { Screen, Field, Select, PrimaryButton, Card } from '@/components/ui';
 import { useData } from '@/state/DataProvider';
 import { createBill } from '@/lib/repository';
 import { findEntry, formatRupees, lineTotal, billGrandTotal } from '@/lib/logic';
@@ -27,7 +27,7 @@ export default function CreateBillScreen() {
 
   const plantNames = useMemo(() => [...new Set(plants.map((p) => p.plantName))].sort(), [plants]);
   const sizesForPlant = useMemo(
-    () => plants.filter((p) => p.plantName === plantName).map((p) => p.size),
+    () => plants.filter((p) => p.plantName === plantName && p.quantity > 0).map((p) => p.size),
     [plants, plantName],
   );
   const entry = findEntry(plants, plantName, size); // rate comes from here — never typed
@@ -93,16 +93,29 @@ export default function CreateBillScreen() {
   // ── Bill builder ──
   return (
     <Screen title="Create Bill">
-      <datalist id="bill-names">{plantNames.map((n) => <option key={n} value={n} />)}</datalist>
-      <datalist id="bill-sizes">{sizesForPlant.map((s) => <option key={s} value={s} />)}</datalist>
-
       <h2 className="mb-2 font-bold text-gray-700">Customer</h2>
       <Field label="Customer Name" value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="Required" />
       <Field label="Mobile Number (optional)" type="tel" inputMode="tel" value={mobile} onChange={(e) => setMobile(e.target.value)} placeholder="For WhatsApp share" />
 
       <h2 className="mb-2 mt-4 font-bold text-gray-700">Add Plants</h2>
-      <Field label="Plant Name" list="bill-names" value={plantName} onChange={(e) => setPlantName(e.target.value)} placeholder="Select plant" />
-      <Field label="Size" list="bill-sizes" value={size} onChange={(e) => setSize(e.target.value)} placeholder="Select size" />
+      <Select
+        label="Plant Name"
+        placeholder={plantNames.length ? 'Select a plant' : 'No plants in inventory yet'}
+        value={plantName}
+        onChange={(e) => {
+          setPlantName(e.target.value);
+          setSize('');
+        }}
+        options={plantNames.map((n) => ({ value: n, label: n }))}
+      />
+      <Select
+        label="Size"
+        placeholder={plantName ? 'Select a size' : 'Pick a plant first'}
+        value={size}
+        onChange={(e) => setSize(e.target.value)}
+        disabled={!plantName}
+        options={sizesForPlant.map((s) => ({ value: s, label: s }))}
+      />
       <div className="mb-3 flex items-end gap-3">
         <div className="flex-1">
           <Field label="Quantity" type="number" inputMode="numeric" value={qty} onChange={(e) => setQty(e.target.value)} placeholder="Qty" />
