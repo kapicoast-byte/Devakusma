@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Devakusuma Nursery Management App — offline-first PWA",
+  "description": "Devakusuma Nursery Gardens Management App — offline-first PWA",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

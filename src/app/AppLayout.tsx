@@ -114,7 +114,7 @@ export default function AppLayout() {
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
           <div className="flex items-center gap-2 font-bold text-gray-800">
-            <span>🌿</span> Devakusuma Nursery
+            <span>🌿</span> Devakusuma Nursery Gardens
           </div>
         </header>
 

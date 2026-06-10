@@ -1,4 +1,4 @@
-# 🌿 Devakusuma Nursery Management App
+# 🌿 Devakusuma Nursery Gardens — Management App
 
 An **offline-first PWA** for running a plant nursery — inventory,
 billing with PDF invoices, and an owner analytics dashboard. Built to feel like a

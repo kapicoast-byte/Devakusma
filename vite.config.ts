@@ -16,9 +16,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons/*.png'],
       manifest: {
-        name: 'Devakusuma Nursery',
+        name: 'Devakusuma Nursery Gardens',
         short_name: 'Devakusuma',
-        description: 'Nursery Management App — inventory, billing & growth tracking',
+        description: 'Nursery Gardens — inventory, billing & stock management',
         theme_color: '#1B5E20',
         background_color: '#E8F5E9',
         display: 'standalone',

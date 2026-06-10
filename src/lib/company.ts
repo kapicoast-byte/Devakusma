@@ -16,7 +16,7 @@ export interface CompanyProfile {
 }
 
 export const companyProfile: CompanyProfile = {
-  name: 'Devakusuma Nursery',
+  name: 'Devakusuma Nursery Gardens',
   tagline: 'Plants for every garden',
   address: '',
   phone: '',

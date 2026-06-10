@@ -23,7 +23,7 @@ export function downloadMonthlyReport(bills: Bill[], plants: Plant[]): void {
   const doc: TDocumentDefinitions = {
     pageMargins: [40, 50, 40, 50],
     content: [
-      { text: '🌿 Devakusuma Nursery', fontSize: 20, bold: true, color: '#1B5E20' },
+      { text: '🌿 Devakusuma Nursery Gardens', fontSize: 20, bold: true, color: '#1B5E20' },
       { text: `Monthly Business Report — ${monthName}`, fontSize: 12, color: '#666' },
 
       ...section('Total Sales Revenue', {

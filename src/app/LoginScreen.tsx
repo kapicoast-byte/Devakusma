@@ -22,7 +22,7 @@ export default function LoginScreen() {
   return (
     <div className="flex min-h-full flex-col items-center justify-center bg-[var(--color-mint)] px-6 text-center">
       <div className="mb-6 text-6xl">🌿</div>
-      <h1 className="text-3xl font-extrabold text-[var(--color-leaf)]">Devakusuma Nursery</h1>
+      <h1 className="text-3xl font-extrabold text-[var(--color-leaf)]">Devakusuma Nursery Gardens</h1>
       <p className="mb-8 mt-2 text-gray-600">Sign in to manage your nursery.</p>
 
       {!configured ? (

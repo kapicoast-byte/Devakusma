@@ -6,7 +6,7 @@ import { invoiceAsFile } from './invoice';
 function billMessage(bill: Bill): string {
   const lines = bill.items.map((it) => `• ${it.plantName} ${it.size} × ${it.qty} = ${formatRupees(it.lineTotal)}`);
   return [
-    `🌿 Devakusuma Nursery`,
+    `🌿 Devakusuma Nursery Gardens`,
     `Invoice ${bill.invoiceNo}`,
     `Customer: ${bill.customerName}`,
     '',
