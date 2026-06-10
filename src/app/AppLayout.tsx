@@ -7,6 +7,7 @@ import {
   Leaf,
   PlusCircle,
   ReceiptText,
+  FileText,
   IndianRupee,
   LogOut,
 } from 'lucide-react';
@@ -34,6 +35,7 @@ export default function AppLayout() {
     { to: '/plants', label: 'Plants Available', icon: Leaf, badge: lowStock.length },
     { to: '/add', label: 'Add Plants', icon: PlusCircle },
     { to: '/bill', label: 'Create Bill', icon: ReceiptText },
+    { to: '/bills', label: 'Bills', icon: FileText },
     { to: '/value', label: 'Stock Value', icon: IndianRupee },
   ];
 

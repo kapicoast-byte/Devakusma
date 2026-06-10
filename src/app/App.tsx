@@ -5,6 +5,7 @@ import DashboardScreen from '@/features/dashboard/DashboardScreen';
 import PlantsScreen from '@/features/inventory/PlantsScreen';
 import AddStockScreen from '@/features/inventory/AddStockScreen';
 import CreateBillScreen from '@/features/billing/CreateBillScreen';
+import BillsScreen from '@/features/billing/BillsScreen';
 import StockValueScreen from '@/features/stockValue/StockValueScreen';
 import { useData } from '@/state/DataProvider';
 
@@ -32,6 +33,7 @@ export default function App() {
         <Route path="/plants" element={<PlantsScreen />} />
         <Route path="/add" element={<AddStockScreen />} />
         <Route path="/bill" element={<CreateBillScreen />} />
+        <Route path="/bills" element={<BillsScreen />} />
         <Route path="/value" element={<StockValueScreen />} />
       </Route>
     </Routes>
