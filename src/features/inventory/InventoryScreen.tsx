@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Upload } from 'lucide-react';
 import { Screen, Card, Modal } from '@/components/ui';
 import { useData } from '@/state/DataProvider';
 import { searchPlants, formatRupees } from '@/lib/logic';
 import AddStockForm from './AddStockForm';
+import BulkUpload from './BulkUpload';
 import type { Plant } from '@/types';
 
 /** Inventory module — list/search all plants, add stock, and quick-add per entry. */
@@ -13,6 +14,7 @@ export default function InventoryScreen() {
   const [params, setParams] = useSearchParams();
   const [q, setQ] = useState('');
   const [showAdd, setShowAdd] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [quickAdd, setQuickAdd] = useState<Plant | null>(null);
 
   // Allow deep-linking to the Add Stock dialog (e.g. from the dashboard).
@@ -32,12 +34,22 @@ export default function InventoryScreen() {
       title="Inventory"
       subtitle={`${plants.length} item${plants.length === 1 ? '' : 's'}`}
       actions={
-        <button
-          onClick={() => setShowAdd(true)}
-          className="flex items-center gap-2 rounded-xl bg-[var(--color-leaf)] px-4 py-2 font-bold text-white shadow-md transition active:scale-[0.98]"
-        >
-          <Plus size={18} /> Add Stock
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowImport(true)}
+            aria-label="Bulk upload from Excel"
+            className="flex items-center gap-2 rounded-xl border-2 border-[var(--color-leaf)] px-3 py-2 font-semibold text-[var(--color-leaf)] transition hover:bg-[var(--color-mint)]"
+          >
+            <Upload size={18} />
+            <span className="hidden sm:inline">Import</span>
+          </button>
+          <button
+            onClick={() => setShowAdd(true)}
+            className="flex items-center gap-2 rounded-xl bg-[var(--color-leaf)] px-4 py-2 font-bold text-white shadow-md transition active:scale-[0.98]"
+          >
+            <Plus size={18} /> Add Stock
+          </button>
+        </div>
       }
     >
       <div className="mb-4 flex items-center gap-2 rounded-xl border-2 border-[var(--color-mint-border)] bg-white px-3">
@@ -103,6 +115,11 @@ export default function InventoryScreen() {
       {showAdd && (
         <Modal title="Add Stock" onClose={() => setShowAdd(false)}>
           <AddStockForm onDone={() => setShowAdd(false)} />
+        </Modal>
+      )}
+      {showImport && (
+        <Modal title="Bulk Upload (Excel)" onClose={() => setShowImport(false)}>
+          <BulkUpload onDone={() => setShowImport(false)} />
         </Modal>
       )}
       {quickAdd && (

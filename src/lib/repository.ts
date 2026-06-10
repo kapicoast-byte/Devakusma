@@ -9,6 +9,7 @@ import {
   setDoc,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 import { db } from './firebase';
 import type { Bill, BillItem, Plant } from '@/types';
@@ -85,6 +86,31 @@ export async function addStock(input: {
 /** Update the low-stock threshold for an entry. */
 export async function setThreshold(plantId: string, minThreshold: number): Promise<void> {
   await updateDoc(doc(plantsCol(), plantId), { minThreshold, updatedAt: Date.now() });
+}
+
+/**
+ * Bulk import — create or overwrite inventory entries from an uploaded sheet.
+ * Each plant+size's quantity/price/threshold is SET to the sheet value
+ * (authoritative), batched to stay within Firestore limits.
+ */
+export async function bulkUpsertPlants(
+  rows: { plantName: string; size: string; quantity: number; sellingPrice: number; minThreshold: number }[],
+): Promise<void> {
+  const CHUNK = 400;
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const batch = writeBatch(db);
+    for (const r of rows.slice(i, i + CHUNK)) {
+      batch.set(doc(plantsCol(), entryId(r.plantName, r.size)), {
+        plantName: r.plantName.trim(),
+        size: r.size.trim(),
+        quantity: r.quantity,
+        sellingPrice: r.sellingPrice,
+        minThreshold: r.minThreshold,
+        updatedAt: Date.now(),
+      });
+    }
+    await batch.commit();
+  }
 }
 
 /**

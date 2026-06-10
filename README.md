@@ -22,7 +22,7 @@ BUY small plants → ADD STOCK → SELL → CREATE BILL → PDF → WhatsApp
 | Module | Screen | What it does |
 |---|---|---|
 | 1 | Home | 5 large icon buttons + low-stock banner |
-| 2 / 3 / 9 | Inventory | List/search plants; Add Stock dialog + per-row quick add (merges into existing plant+size) |
+| 2 / 3 / 9 | Inventory | List/search plants; Add Stock dialog + per-row quick add; **bulk Excel import** (download template → upload) |
 | 5 / 7 | Create Bill | Auto-priced items, auto stock deduction |
 | 6 | PDF Invoice | Download · Share on WhatsApp · Print |
 | 8 | Stock Value | Per-entry value + grand total |
