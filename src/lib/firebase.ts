@@ -5,7 +5,7 @@ import {
   persistentMultipleTabManager,
   type Firestore,
 } from 'firebase/firestore';
-import { getAuth, type Auth } from 'firebase/auth';
+import { getAuth, signInAnonymously, type Auth } from 'firebase/auth';
 
 /**
  * Firebase initialisation with OFFLINE-FIRST persistence.
@@ -35,6 +35,11 @@ if (isFirebaseConfigured) {
     localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
   });
   authInstance = getAuth(app);
+  // Sign in anonymously so Firestore security rules (which require auth) allow
+  // the nursery's reads/writes. Requires "Anonymous" sign-in enabled in Firebase.
+  signInAnonymously(authInstance).catch((e) =>
+    console.error('[Devakusuma] Anonymous sign-in failed — enable it in Firebase Auth.', e),
+  );
 } else {
   // Helpful during local setup before a Firebase project is wired up.
   console.warn(

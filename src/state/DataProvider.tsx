@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Bill, Plant, Role } from '@/types';
-import { isFirebaseConfigured } from '@/lib/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, isFirebaseConfigured } from '@/lib/firebase';
 import { watchBills, watchPlants } from '@/lib/repository';
 import { lowStockEntries } from '@/lib/logic';
 
@@ -29,12 +30,22 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setLoading(false);
       return;
     }
-    const unsubPlants = watchPlants((p) => {
-      setPlants(p);
-      setLoading(false);
+    // Wait until anonymous auth is established before subscribing, otherwise the
+    // first reads can be rejected by the security rules.
+    let unsubPlants = () => {};
+    let unsubBills = () => {};
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
+      if (!user) return;
+      unsubPlants();
+      unsubBills();
+      unsubPlants = watchPlants((p) => {
+        setPlants(p);
+        setLoading(false);
+      });
+      unsubBills = watchBills(setBills);
     });
-    const unsubBills = watchBills(setBills);
     return () => {
+      unsubAuth();
       unsubPlants();
       unsubBills();
     };

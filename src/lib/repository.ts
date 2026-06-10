@@ -19,13 +19,16 @@ import { formatInvoiceNo, norm } from './logic';
  * inventory stays correct even offline (Firestore queues and reconciles).
  */
 
-const plantsCol = collection(db, 'plants');
-const billsCol = collection(db, 'bills');
-const sizeChangesCol = collection(db, 'sizeChanges');
+// Lazy collection refs: built on first use, not at module load. This lets the
+// app boot and show the "not configured" banner when Firebase keys are missing,
+// instead of throwing during import.
+const plantsCol = () => collection(db, 'plants');
+const billsCol = () => collection(db, 'bills');
+const sizeChangesCol = () => collection(db, 'sizeChanges');
 
 /** Live subscription to the full inventory (cached & offline-capable). */
 export function watchPlants(cb: (plants: Plant[]) => void): () => void {
-  return onSnapshot(plantsCol, (snap) => {
+  return onSnapshot(plantsCol(), (snap) => {
     const plants = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Plant, 'id'>) }));
     plants.sort((a, b) => a.plantName.localeCompare(b.plantName) || a.size.localeCompare(b.size));
     cb(plants);
@@ -34,7 +37,7 @@ export function watchPlants(cb: (plants: Plant[]) => void): () => void {
 
 /** Live subscription to all bills (for the owner dashboard). */
 export function watchBills(cb: (bills: Bill[]) => void): () => void {
-  return onSnapshot(billsCol, (snap) => {
+  return onSnapshot(billsCol(), (snap) => {
     const bills = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Bill, 'id'>) }));
     bills.sort((a, b) => b.date - a.date);
     cb(bills);
@@ -57,7 +60,7 @@ export async function addStock(input: {
   minThreshold?: number;
 }): Promise<void> {
   const id = entryId(input.plantName, input.size);
-  const ref = doc(plantsCol, id);
+  const ref = doc(plantsCol(), id);
   await runTransaction(db, async (tx) => {
     const snap = await tx.get(ref);
     if (snap.exists()) {
@@ -82,7 +85,7 @@ export async function addStock(input: {
 
 /** Update the low-stock threshold for an entry. */
 export async function setThreshold(plantId: string, minThreshold: number): Promise<void> {
-  await updateDoc(doc(plantsCol, plantId), { minThreshold, updatedAt: Date.now() });
+  await updateDoc(doc(plantsCol(), plantId), { minThreshold, updatedAt: Date.now() });
 }
 
 /**
@@ -95,8 +98,8 @@ export async function changeSize(input: {
   toSize: string;
   qty: number;
 }): Promise<void> {
-  const fromRef = doc(plantsCol, entryId(input.plantName, input.fromSize));
-  const toRef = doc(plantsCol, entryId(input.plantName, input.toSize));
+  const fromRef = doc(plantsCol(), entryId(input.plantName, input.fromSize));
+  const toRef = doc(plantsCol(), entryId(input.plantName, input.toSize));
   await runTransaction(db, async (tx) => {
     const fromSnap = await tx.get(fromRef);
     const toSnap = await tx.get(toRef);
@@ -118,7 +121,7 @@ export async function changeSize(input: {
         updatedAt: Date.now(),
       });
     }
-    const logRef = doc(sizeChangesCol);
+    const logRef = doc(sizeChangesCol());
     tx.set(logRef, {
       plantName: input.plantName.trim(),
       fromSize: input.fromSize.trim(),
@@ -140,11 +143,11 @@ export async function createBill(input: {
   items: BillItem[];
 }): Promise<Bill> {
   const counterRef = doc(db, 'counters', 'invoice');
-  const billRef = doc(billsCol);
+  const billRef = doc(billsCol());
 
   return runTransaction(db, async (tx) => {
     // 1. Read everything first (Firestore requires reads before writes).
-    const itemRefs = input.items.map((it) => doc(plantsCol, entryId(it.plantName, it.size)));
+    const itemRefs = input.items.map((it) => doc(plantsCol(), entryId(it.plantName, it.size)));
     const itemSnaps = await Promise.all(itemRefs.map((r) => tx.get(r)));
     const counterSnap = await tx.get(counterRef);
 
@@ -187,7 +190,7 @@ export async function createBill(input: {
 
 /** One-time fetch of bills within a date range (dashboard reports). */
 export async function getBillsBetween(startMs: number, endMs: number): Promise<Bill[]> {
-  const q = query(billsCol, where('date', '>=', startMs), where('date', '<=', endMs));
+  const q = query(billsCol(), where('date', '>=', startMs), where('date', '<=', endMs));
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Bill, 'id'>) }));
 }
