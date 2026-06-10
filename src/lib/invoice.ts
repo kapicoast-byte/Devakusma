@@ -1,31 +1,43 @@
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import type { TDocumentDefinitions } from 'pdfmake/interfaces';
+import type { Content } from 'pdfmake/interfaces';
 import type { Bill } from '@/types';
 import { formatRupees } from './logic';
+import { getCompanyProfile } from './company';
 
 pdfMake.vfs = (pdfFonts as unknown as { vfs: Record<string, string> }).vfs;
 
-const NURSERY_NAME = 'Devakusuma Nursery';
 const right = (text: string, opts: Record<string, unknown> = {}) =>
   ({ text, alignment: 'right' as const, ...opts });
 
 function buildDoc(bill: Bill): TDocumentDefinitions {
+  const company = getCompanyProfile();
   const date = new Date(bill.date).toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
   });
 
+  // Company details block (populated by the Company Profile module later).
+  const companyLines: Content[] = [
+    { text: `🌿 ${company.name}`, fontSize: 20, bold: true, color: '#1B5E20' },
+  ];
+  if (company.tagline) companyLines.push({ text: company.tagline, fontSize: 10, color: '#666' });
+  if (company.address) companyLines.push({ text: company.address, fontSize: 10, color: '#444' });
+  const contact = [company.phone, company.email].filter(Boolean).join('  •  ');
+  if (contact) companyLines.push({ text: contact, fontSize: 10, color: '#444' });
+  if (company.gstin) companyLines.push({ text: `GSTIN: ${company.gstin}`, fontSize: 10, color: '#444' });
+
   return {
     pageMargins: [40, 50, 40, 50],
     content: [
-      { text: `🌿 ${NURSERY_NAME}`, fontSize: 20, bold: true, color: '#1B5E20' },
-      { text: 'Sales Invoice', fontSize: 12, color: '#666', margin: [0, 0, 0, 12] },
+      ...companyLines,
+      { text: 'Bill', fontSize: 12, color: '#666', margin: [0, 6, 0, 12] },
       {
         columns: [
           [
-            { text: `Invoice No: ${bill.invoiceNo}`, bold: true },
+            { text: `Bill No: ${bill.invoiceNo}`, bold: true },
             { text: `Date: ${date}` },
           ],
           [
@@ -33,7 +45,7 @@ function buildDoc(bill: Bill): TDocumentDefinitions {
             bill.mobile ? right(`Mobile: ${bill.mobile}`) : { text: '' },
           ],
         ],
-        margin: [0, 0, 0, 16],
+        margin: [0, 10, 0, 16],
       },
       {
         table: {

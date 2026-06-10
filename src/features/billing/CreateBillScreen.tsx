@@ -79,7 +79,7 @@ export default function CreateBillScreen() {
             <span className="inline-flex items-center justify-center gap-2"><Share2 /> Share via WhatsApp</span>
           </PrimaryButton>
           <button onClick={() => downloadInvoice(savedBill)} className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-[var(--color-leaf)] py-4 text-lg font-bold text-[var(--color-leaf)]">
-            <Download /> Download PDF
+            <Download /> Download Bill (PDF)
           </button>
           <button onClick={() => printInvoice(savedBill)} className="flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-gray-300 py-4 text-lg font-bold text-gray-700">
             <Printer /> Print
