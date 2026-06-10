@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+
+:root {
+  /* Nursery green theme (from PRD) */
+  --color-leaf: #1b5e20;
+  --color-leaf-light: #2e7d32;
+  --color-mint: #e8f5e9;
+  --color-mint-border: #a5d6a7;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  /* Large, readable text — PRD design rule (min 16pt) */
+  font-size: 17px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  color: #212121;
+  background: var(--color-mint);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Big tap targets everywhere */
+button {
+  cursor: pointer;
+  min-height: 48px;
+}

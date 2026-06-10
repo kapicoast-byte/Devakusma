@@ -1,0 +1,18 @@
+rules_version = '2';
+
+// Phase 1 rules. Tighten with proper auth/roles before going to production.
+// For the initial single-nursery setup, signed-in users can read/write the
+// nursery's data. The Owner Dashboard is gated in-app by a PIN.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    match /plants/{id}        { allow read, write: if signedIn(); }
+    match /bills/{id}         { allow read, write: if signedIn(); }
+    match /sizeChanges/{id}   { allow read, write: if signedIn(); }
+    match /counters/{id}      { allow read, write: if signedIn(); }
+    match /settings/{id}      { allow read, write: if signedIn(); }
+  }
+}

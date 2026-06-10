@@ -1,0 +1,23 @@
+{
+  "app": { "name": "Devakusuma Nursery" },
+  "home": {
+    "plantsAvailable": "Plants Available",
+    "addPlants": "Add Plants",
+    "changeSize": "Change Plant Size",
+    "createBill": "Create Bill",
+    "stockValue": "Stock Value",
+    "ownerDashboard": "Owner Dashboard"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "back": "Back",
+    "quantity": "Quantity",
+    "plantName": "Plant Name",
+    "size": "Size",
+    "price": "Selling Price (₹)",
+    "confirm": "Confirm"
+  },
+  "alerts": { "lowStock": "Low Stock Alert" }
+}
