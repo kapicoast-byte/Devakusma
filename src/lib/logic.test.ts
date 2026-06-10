@@ -7,7 +7,6 @@ import {
   lowStockEntries,
   formatRupees,
   formatInvoiceNo,
-  validateSizeChange,
   billGrandTotal,
   unitsSoldByPlant,
 } from './logic';
@@ -60,19 +59,6 @@ describe('formatting', () => {
   });
   it('pads invoice numbers', () => {
     expect(formatInvoiceNo(42)).toBe('INV-0042');
-  });
-});
-
-describe('size change validation', () => {
-  const from = plant({ quantity: 200 });
-  it('rejects same size', () => {
-    expect(validateSizeChange(from, '1 ft', '1 ft', 10)).toMatch(/different/);
-  });
-  it('rejects over-quantity', () => {
-    expect(validateSizeChange(from, '1 ft', '2 ft', 999)).toMatch(/Only 200/);
-  });
-  it('accepts a valid move', () => {
-    expect(validateSizeChange(from, '1 ft', '2 ft', 100)).toBeNull();
   });
 });
 

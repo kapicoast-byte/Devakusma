@@ -36,14 +36,4 @@ export interface Bill {
   createdAt: number;
 }
 
-/** Audit log entry for a growth (size change) action. */
-export interface SizeChange {
-  id: string;
-  plantName: string;
-  fromSize: string;
-  toSize: string;
-  qty: number;
-  date: number;
-}
-
 export type Role = 'farmer' | 'owner';

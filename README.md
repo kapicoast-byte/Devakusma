@@ -1,6 +1,6 @@
 # 🌿 Devakusuma Nursery Management App
 
-An **offline-first PWA** for running a plant nursery — inventory, growth tracking,
+An **offline-first PWA** for running a plant nursery — inventory,
 billing with PDF invoices, and an owner analytics dashboard. Built to feel like a
 nursery tool, not business software (large buttons, ≥16pt text, no jargon, 3-tap actions).
 
@@ -10,10 +10,10 @@ Stack: **React + Vite + TypeScript**, **Tailwind CSS**, **Firebase Firestore**
 ## The workflow it supports
 
 ```
-BUY small plants → ADD STOCK → plant GROWS → CHANGE SIZE → SELL → CREATE BILL → PDF → WhatsApp
-                       │                          │                     │
-                       ▼                          ▼                     ▼
-                 inventory qty ↑          qty moves size→size    inventory qty ↓ (auto)
+BUY small plants → ADD STOCK → SELL → CREATE BILL → PDF → WhatsApp
+                       │                                      │
+                       ▼                                      ▼
+                 inventory qty ↑                     inventory qty ↓ (auto)
         All events feed ▶ STOCK VALUE · LOW-STOCK ALERTS · OWNER DASHBOARD
 ```
 
@@ -21,10 +21,9 @@ BUY small plants → ADD STOCK → plant GROWS → CHANGE SIZE → SELL → CREA
 
 | Module | Screen | What it does |
 |---|---|---|
-| 1 | Home | 6 large icon buttons + low-stock banner |
+| 1 | Home | 5 large icon buttons + low-stock banner |
 | 2 / 9 | Plants Available | List inventory by plant & size, instant search |
 | 3 | Add Plants | Add stock; merges into existing plant+size |
-| 4 | Change Plant Size | Move quantity between sizes (growth) |
 | 5 / 7 | Create Bill | Auto-priced items, auto stock deduction |
 | 6 | PDF Invoice | Download · Share on WhatsApp · Print |
 | 8 | Stock Value | Per-entry value + grand total |
@@ -58,7 +57,6 @@ src/
   app/            App router + Home screen (Module 1)
   features/
     inventory/    Plants Available, Add Stock, Search (Modules 2,3,9)
-    growth/       Change Plant Size (Module 4)
     billing/      Create Bill + invoice actions (Modules 5,6,7)
     stockValue/   Stock Value (Module 8)
     dashboard/    Owner Dashboard (Module 11)

@@ -53,23 +53,6 @@ export const lineTotal = (qty: number, rate: number): number => qty * rate;
 export const billGrandTotal = (items: BillItem[]): number =>
   items.reduce((sum, it) => sum + it.lineTotal, 0);
 
-/**
- * Module 04 — validate a growth/size-change move.
- * Returns an error string if invalid, otherwise null.
- */
-export function validateSizeChange(
-  from: Plant | undefined,
-  fromSize: string,
-  toSize: string,
-  qty: number,
-): string | null {
-  if (norm(fromSize) === norm(toSize)) return 'From and To sizes must be different.';
-  if (qty <= 0) return 'Quantity must be more than zero.';
-  if (!from) return 'No stock found for that plant and size.';
-  if (qty > from.quantity) return `Only ${from.quantity} available to move.`;
-  return null;
-}
-
 /** Sales analytics helper — total units sold per plant from a list of bills. */
 export function unitsSoldByPlant(
   bills: { items: BillItem[] }[],

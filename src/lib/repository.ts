@@ -11,7 +11,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Bill, BillItem, Plant, SizeChange } from '@/types';
+import type { Bill, BillItem, Plant } from '@/types';
 import { formatInvoiceNo, norm } from './logic';
 
 /**
@@ -24,7 +24,6 @@ import { formatInvoiceNo, norm } from './logic';
 // instead of throwing during import.
 const plantsCol = () => collection(db, 'plants');
 const billsCol = () => collection(db, 'bills');
-const sizeChangesCol = () => collection(db, 'sizeChanges');
 
 /** Live subscription to the full inventory (cached & offline-capable). */
 export function watchPlants(cb: (plants: Plant[]) => void): () => void {
@@ -86,50 +85,6 @@ export async function addStock(input: {
 /** Update the low-stock threshold for an entry. */
 export async function setThreshold(plantId: string, minThreshold: number): Promise<void> {
   await updateDoc(doc(plantsCol(), plantId), { minThreshold, updatedAt: Date.now() });
-}
-
-/**
- * Module 04 — Change plant size (growth).
- * Deducts from the old size and adds to the new size in one transaction.
- */
-export async function changeSize(input: {
-  plantName: string;
-  fromSize: string;
-  toSize: string;
-  qty: number;
-}): Promise<void> {
-  const fromRef = doc(plantsCol(), entryId(input.plantName, input.fromSize));
-  const toRef = doc(plantsCol(), entryId(input.plantName, input.toSize));
-  await runTransaction(db, async (tx) => {
-    const fromSnap = await tx.get(fromRef);
-    const toSnap = await tx.get(toRef);
-    if (!fromSnap.exists()) throw new Error('No stock found for that plant and size.');
-    const from = fromSnap.data() as Plant;
-    if (input.qty > from.quantity) throw new Error(`Only ${from.quantity} available to move.`);
-
-    tx.update(fromRef, { quantity: from.quantity - input.qty, updatedAt: Date.now() });
-    if (toSnap.exists()) {
-      const to = toSnap.data() as Plant;
-      tx.update(toRef, { quantity: to.quantity + input.qty, updatedAt: Date.now() });
-    } else {
-      tx.set(toRef, {
-        plantName: input.plantName.trim(),
-        size: input.toSize.trim(),
-        quantity: input.qty,
-        sellingPrice: from.sellingPrice,
-        minThreshold: from.minThreshold,
-        updatedAt: Date.now(),
-      });
-    }
-    const logRef = doc(sizeChangesCol());
-    tx.set(logRef, {
-      plantName: input.plantName.trim(),
-      fromSize: input.fromSize.trim(),
-      toSize: input.toSize.trim(),
-      qty: input.qty,
-      date: Date.now(),
-    } satisfies Omit<SizeChange, 'id'>);
-  });
 }
 
 /**

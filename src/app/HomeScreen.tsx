@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, PlusCircle, Ruler, ReceiptText, IndianRupee, BarChart3, AlertTriangle, LogOut } from 'lucide-react';
+import { Leaf, PlusCircle, ReceiptText, IndianRupee, BarChart3, AlertTriangle, LogOut } from 'lucide-react';
 import { useData } from '@/state/DataProvider';
 
 interface Tile {
@@ -12,7 +12,6 @@ interface Tile {
 const TILES: Tile[] = [
   { to: '/plants', label: 'Plants Available', icon: <Leaf size={40} /> },
   { to: '/add', label: 'Add Plants', icon: <PlusCircle size={40} /> },
-  { to: '/grow', label: 'Change Plant Size', icon: <Ruler size={40} /> },
   { to: '/bill', label: 'Create Bill', icon: <ReceiptText size={40} /> },
   { to: '/value', label: 'Stock Value', icon: <IndianRupee size={40} /> },
   { to: '/dashboard', label: 'Owner Dashboard', icon: <BarChart3 size={40} /> },
