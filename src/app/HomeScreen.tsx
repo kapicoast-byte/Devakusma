@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, PlusCircle, Ruler, ReceiptText, IndianRupee, BarChart3, AlertTriangle } from 'lucide-react';
+import { Leaf, PlusCircle, Ruler, ReceiptText, IndianRupee, BarChart3, AlertTriangle, LogOut } from 'lucide-react';
 import { useData } from '@/state/DataProvider';
 
 interface Tile {
@@ -20,15 +20,25 @@ const TILES: Tile[] = [
 
 export default function HomeScreen() {
   const navigate = useNavigate();
-  const { lowStock, configured } = useData();
+  const { lowStock, configured, user, signOut } = useData();
 
   return (
     <div className="min-h-full bg-[var(--color-mint)] pb-10">
-      <header className="bg-[var(--color-leaf)] px-5 py-6 text-white shadow">
+      <header className="flex items-center justify-between bg-[var(--color-leaf)] px-5 py-6 text-white shadow">
         <div className="flex items-center gap-2 text-2xl font-extrabold">
           <span>🌿</span>
           <span>Devakusuma Nursery</span>
         </div>
+        {user && (
+          <button
+            onClick={() => signOut()}
+            aria-label="Sign out"
+            title={`Sign out (${user.displayName ?? user.email ?? ''})`}
+            className="rounded-full p-2 hover:bg-white/15"
+          >
+            <LogOut size={22} />
+          </button>
+        )}
       </header>
 
       <main className="mx-auto max-w-xl px-4 py-5">

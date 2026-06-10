@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Bill, Plant, Role } from '@/types';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth, isFirebaseConfigured } from '@/lib/firebase';
+import { onAuthStateChanged, type User } from 'firebase/auth';
+import { auth, isFirebaseConfigured, signInWithGoogle, signOutUser } from '@/lib/firebase';
 import { watchBills, watchPlants } from '@/lib/repository';
 import { lowStockEntries } from '@/lib/logic';
 
@@ -11,6 +11,12 @@ interface DataContextValue {
   loading: boolean;
   lowStock: Plant[];
   configured: boolean;
+  /** The signed-in Google user (null until they sign in). */
+  user: User | null;
+  /** True until the initial auth state has been resolved. */
+  authChecked: boolean;
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
   /** Owner unlocks the dashboard with the PIN; resets on reload. */
   role: Role;
   unlockOwner: () => void;
@@ -24,20 +30,31 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [bills, setBills] = useState<Bill[]>([]);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<Role>('farmer');
+  const [user, setUser] = useState<User | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     if (!isFirebaseConfigured) {
       setLoading(false);
+      setAuthChecked(true);
       return;
     }
-    // Wait until anonymous auth is established before subscribing, otherwise the
-    // first reads can be rejected by the security rules.
+    // Subscribe to data only once a user is signed in — Firestore rules require
+    // an authenticated user, so reads before sign-in would be rejected.
     let unsubPlants = () => {};
     let unsubBills = () => {};
-    const unsubAuth = onAuthStateChanged(auth, (user) => {
-      if (!user) return;
+    const unsubAuth = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setAuthChecked(true);
       unsubPlants();
       unsubBills();
+      if (!u) {
+        setPlants([]);
+        setBills([]);
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
       unsubPlants = watchPlants((p) => {
         setPlants(p);
         setLoading(false);
@@ -58,11 +75,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
       loading,
       lowStock: lowStockEntries(plants),
       configured: isFirebaseConfigured,
+      user,
+      authChecked,
+      signIn: signInWithGoogle,
+      signOut: signOutUser,
       role,
       unlockOwner: () => setRole('owner'),
       lockOwner: () => setRole('farmer'),
     }),
-    [plants, bills, loading, role],
+    [plants, bills, loading, role, user, authChecked],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
