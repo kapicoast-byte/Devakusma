@@ -49,7 +49,7 @@ export default function DashboardScreen() {
       {/* Low Stock Alert */}
       {lowStock.length > 0 && (
         <button
-          onClick={() => navigate('/plants')}
+          onClick={() => navigate('/inventory')}
           className="mb-5 flex w-full items-start gap-3 rounded-2xl border-2 border-red-300 bg-red-50 p-4 text-left text-red-800 transition hover:bg-red-100"
         >
           <AlertTriangle className="mt-0.5 shrink-0" />
@@ -101,10 +101,10 @@ export default function DashboardScreen() {
       {/* Quick actions */}
       <div className="mb-6 grid grid-cols-2 gap-3">
         <button
-          onClick={() => navigate('/add')}
+          onClick={() => navigate('/inventory?add=1')}
           className="flex items-center justify-center gap-2 rounded-2xl bg-[var(--color-leaf)] px-4 py-3 font-bold text-white shadow-md transition active:scale-[0.98]"
         >
-          <PlusCircle size={20} /> Add Plants
+          <PlusCircle size={20} /> Add Stock
         </button>
         <button
           onClick={() => navigate('/bill')}

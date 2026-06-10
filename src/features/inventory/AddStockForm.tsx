@@ -1,32 +1,36 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Screen, Field, Select, PrimaryButton } from '@/components/ui';
+import { Field, Select, PrimaryButton } from '@/components/ui';
 import { useData } from '@/state/DataProvider';
 import { addStock } from '@/lib/repository';
 import { findEntry } from '@/lib/logic';
 
 const NEW = '__new__';
 
-/** Module 03 — Add new stock. Pick from inventory or add a brand-new plant/size. */
-export default function AddStockScreen() {
-  const navigate = useNavigate();
+interface Props {
+  onDone: () => void;
+  /** When set, the plant + size are fixed (quick add for an existing entry). */
+  lockTo?: { plantName: string; size: string; sellingPrice: number; quantity: number };
+}
+
+/** Add-stock form: pick from inventory or add a new plant/size, or quick-add to a locked entry. */
+export default function AddStockForm({ onDone, lockTo }: Props) {
   const { plants } = useData();
+  const locked = Boolean(lockTo);
 
   const [plantSel, setPlantSel] = useState('');
   const [plantNew, setPlantNew] = useState('');
   const [sizeSel, setSizeSel] = useState('');
   const [sizeNew, setSizeNew] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState(lockTo ? String(lockTo.sellingPrice) : '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   const plantNames = useMemo(() => [...new Set(plants.map((p) => p.plantName))].sort(), [plants]);
 
   const isNewPlant = plantSel === NEW;
-  const plantName = (isNewPlant ? plantNew : plantSel).trim();
+  const plantName = locked ? lockTo!.plantName : (isNewPlant ? plantNew : plantSel).trim();
 
-  // Sizes already stocked for the selected (existing) plant.
   const sizesForPlant = useMemo(
     () =>
       isNewPlant
@@ -36,9 +40,8 @@ export default function AddStockScreen() {
   );
   const sizeIsFreeText = isNewPlant || sizesForPlant.length === 0;
   const isNewSize = sizeIsFreeText || sizeSel === NEW;
-  const size = (isNewSize ? sizeNew : sizeSel).trim();
+  const size = locked ? lockTo!.size : (isNewSize ? sizeNew : sizeSel).trim();
 
-  // Show the current price when the worker picks an existing plant+size.
   const existing = findEntry(plants, plantName, size);
 
   async function handleSave() {
@@ -51,7 +54,7 @@ export default function AddStockScreen() {
     setSaving(true);
     try {
       await addStock({ plantName, size, quantity: qty, sellingPrice: pr });
-      navigate('/plants');
+      onDone();
     } catch (e) {
       setError((e as Error).message);
       setSaving(false);
@@ -59,56 +62,69 @@ export default function AddStockScreen() {
   }
 
   return (
-    <Screen title="Add Plants">
-      <Select
-        label="Plant Name"
-        placeholder="Select a plant"
-        value={plantSel}
-        onChange={(e) => {
-          setPlantSel(e.target.value);
-          setSizeSel('');
-          setSizeNew('');
-        }}
-        options={[
-          ...plantNames.map((n) => ({ value: n, label: n })),
-          { value: NEW, label: '➕ New plant…' },
-        ]}
-      />
-      {isNewPlant && (
-        <Field
-          label="New plant name"
-          value={plantNew}
-          onChange={(e) => setPlantNew(e.target.value)}
-          placeholder="e.g. Areca Palm"
-        />
-      )}
-
-      {sizeIsFreeText ? (
-        <Field
-          label="Plant Size"
-          value={sizeNew}
-          onChange={(e) => setSizeNew(e.target.value)}
-          placeholder="e.g. 2 ft"
-        />
+    <div>
+      {locked ? (
+        <div className="mb-4 rounded-xl border-2 border-[var(--color-mint-border)] bg-white p-3">
+          <div className="font-bold text-gray-800">
+            {lockTo!.plantName} — {lockTo!.size}
+          </div>
+          <div className="text-sm text-gray-500">
+            In stock: {lockTo!.quantity} · ₹{lockTo!.sellingPrice}
+          </div>
+        </div>
       ) : (
         <>
           <Select
-            label="Plant Size"
-            placeholder="Select a size"
-            value={sizeSel}
-            onChange={(e) => setSizeSel(e.target.value)}
+            label="Plant Name"
+            placeholder="Select a plant"
+            value={plantSel}
+            onChange={(e) => {
+              setPlantSel(e.target.value);
+              setSizeSel('');
+              setSizeNew('');
+            }}
             options={[
-              ...sizesForPlant.map((s) => ({ value: s, label: s })),
-              { value: NEW, label: '➕ New size…' },
+              ...plantNames.map((n) => ({ value: n, label: n })),
+              { value: NEW, label: '➕ New plant…' },
             ]}
           />
-          {sizeSel === NEW && (
+          {isNewPlant && (
             <Field
-              label="New size"
+              label="New plant name"
+              value={plantNew}
+              onChange={(e) => setPlantNew(e.target.value)}
+              placeholder="e.g. Areca Palm"
+            />
+          )}
+
+          {sizeIsFreeText ? (
+            <Field
+              label="Plant Size"
               value={sizeNew}
               onChange={(e) => setSizeNew(e.target.value)}
-              placeholder="e.g. 3 ft"
+              placeholder="e.g. 2 ft"
             />
+          ) : (
+            <>
+              <Select
+                label="Plant Size"
+                placeholder="Select a size"
+                value={sizeSel}
+                onChange={(e) => setSizeSel(e.target.value)}
+                options={[
+                  ...sizesForPlant.map((s) => ({ value: s, label: s })),
+                  { value: NEW, label: '➕ New size…' },
+                ]}
+              />
+              {sizeSel === NEW && (
+                <Field
+                  label="New size"
+                  value={sizeNew}
+                  onChange={(e) => setSizeNew(e.target.value)}
+                  placeholder="e.g. 3 ft"
+                />
+              )}
+            </>
           )}
         </>
       )}
@@ -130,8 +146,8 @@ export default function AddStockScreen() {
         placeholder={existing ? `Current: ₹${existing.sellingPrice}` : 'e.g. 250'}
       />
 
-      {existing && (
-        <p className="mb-4 rounded-lg bg-[var(--color-mint)] p-3 text-gray-700">
+      {!locked && existing && (
+        <p className="mb-4 rounded-lg bg-white p-3 text-gray-700">
           Already in stock: <b>{existing.quantity}</b> at ₹{existing.sellingPrice}. New quantity
           will be added on top.
         </p>
@@ -141,6 +157,6 @@ export default function AddStockScreen() {
       <PrimaryButton onClick={handleSave} disabled={saving}>
         {saving ? 'Saving…' : 'Save'}
       </PrimaryButton>
-    </Screen>
+    </div>
   );
 }

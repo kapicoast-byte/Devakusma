@@ -2,8 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import AppLayout from './AppLayout';
 import LoginScreen from './LoginScreen';
 import DashboardScreen from '@/features/dashboard/DashboardScreen';
-import PlantsScreen from '@/features/inventory/PlantsScreen';
-import AddStockScreen from '@/features/inventory/AddStockScreen';
+import InventoryScreen from '@/features/inventory/InventoryScreen';
 import CreateBillScreen from '@/features/billing/CreateBillScreen';
 import BillsScreen from '@/features/billing/BillsScreen';
 import StockValueScreen from '@/features/stockValue/StockValueScreen';
@@ -30,8 +29,7 @@ export default function App() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route path="/" element={<DashboardScreen />} />
-        <Route path="/plants" element={<PlantsScreen />} />
-        <Route path="/add" element={<AddStockScreen />} />
+        <Route path="/inventory" element={<InventoryScreen />} />
         <Route path="/bill" element={<CreateBillScreen />} />
         <Route path="/bills" element={<BillsScreen />} />
         <Route path="/value" element={<StockValueScreen />} />

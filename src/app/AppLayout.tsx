@@ -5,7 +5,6 @@ import {
   X,
   LayoutDashboard,
   Leaf,
-  PlusCircle,
   ReceiptText,
   FileText,
   IndianRupee,
@@ -32,8 +31,7 @@ export default function AppLayout() {
 
   const nav: NavItem[] = [
     { to: '/', label: 'Dashboard', icon: LayoutDashboard, end: true },
-    { to: '/plants', label: 'Plants Available', icon: Leaf, badge: lowStock.length },
-    { to: '/add', label: 'Add Plants', icon: PlusCircle },
+    { to: '/inventory', label: 'Inventory', icon: Leaf, badge: lowStock.length },
     { to: '/bill', label: 'Create Bill', icon: ReceiptText },
     { to: '/bills', label: 'Bills', icon: FileText },
     { to: '/value', label: 'Stock Value', icon: IndianRupee },

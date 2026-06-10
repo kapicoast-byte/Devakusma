@@ -22,8 +22,7 @@ BUY small plants → ADD STOCK → SELL → CREATE BILL → PDF → WhatsApp
 | Module | Screen | What it does |
 |---|---|---|
 | 1 | Home | 5 large icon buttons + low-stock banner |
-| 2 / 9 | Plants Available | List inventory by plant & size, instant search |
-| 3 | Add Plants | Add stock; merges into existing plant+size |
+| 2 / 3 / 9 | Inventory | List/search plants; Add Stock dialog + per-row quick add (merges into existing plant+size) |
 | 5 / 7 | Create Bill | Auto-priced items, auto stock deduction |
 | 6 | PDF Invoice | Download · Share on WhatsApp · Print |
 | 8 | Stock Value | Per-entry value + grand total |
@@ -57,7 +56,7 @@ landing page. (Owner-only roles are not enforced yet — see Roadmap.)
 src/
   app/            App router + Home screen (Module 1)
   features/
-    inventory/    Plants Available, Add Stock, Search (Modules 2,3,9)
+    inventory/    Inventory list, search + Add Stock form (Modules 2,3,9)
     billing/      Create Bill + invoice actions (Modules 5,6,7)
     stockValue/   Stock Value (Module 8)
     dashboard/    Dashboard landing page (Module 11)

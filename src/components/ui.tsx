@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import type {
   ButtonHTMLAttributes,
   InputHTMLAttributes,
@@ -101,6 +102,37 @@ export function Card({ children, className = '' }: { children: ReactNode; classN
   return (
     <div className={`rounded-2xl border-2 border-[var(--color-mint-border)] bg-white p-4 shadow-sm ${className}`}>
       {children}
+    </div>
+  );
+}
+
+/** Centered modal on desktop, bottom sheet on mobile. */
+export function Modal({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-[var(--color-mint)] p-4 shadow-xl sm:rounded-3xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+          <button onClick={onClose} aria-label="Close" className="rounded-full p-2 hover:bg-black/5">
+            <X size={22} />
+          </button>
+        </div>
+        {children}
+      </div>
     </div>
   );
 }
