@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Plus, Upload } from 'lucide-react';
-import { Screen, Card, Modal } from '@/components/ui';
+import { Search, Plus, Upload, Trash2 } from 'lucide-react';
+import { Screen, Card, Modal, PrimaryButton } from '@/components/ui';
 import { useData } from '@/state/DataProvider';
 import { searchPlants, formatRupees, groupByPlant } from '@/lib/logic';
+import { deletePlant } from '@/lib/repository';
 import AddStockForm from './AddStockForm';
 import BulkUpload from './BulkUpload';
 import type { Plant } from '@/types';
@@ -16,6 +17,19 @@ export default function InventoryScreen() {
   const [showAdd, setShowAdd] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [quickAdd, setQuickAdd] = useState<Plant | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<Plant | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDelete() {
+    if (!confirmDelete) return;
+    setDeleting(true);
+    try {
+      await deletePlant(confirmDelete.id);
+      setConfirmDelete(null);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   // Allow deep-linking to the Add Stock dialog (e.g. from the dashboard).
   useEffect(() => {
@@ -112,6 +126,13 @@ export default function InventoryScreen() {
                           >
                             <Plus size={16} /> Add
                           </button>
+                          <button
+                            onClick={() => setConfirmDelete(v)}
+                            aria-label={`Delete ${v.plantName} ${v.size}`}
+                            className="rounded-lg border-2 border-red-200 p-1.5 text-red-500 transition hover:bg-red-50"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </li>
                     );
@@ -131,6 +152,29 @@ export default function InventoryScreen() {
       {showImport && (
         <Modal title="Bulk Upload (Excel)" onClose={() => setShowImport(false)}>
           <BulkUpload onDone={() => setShowImport(false)} />
+        </Modal>
+      )}
+      {confirmDelete && (
+        <Modal title="Delete plant?" onClose={() => setConfirmDelete(null)}>
+          <p className="mb-4 text-gray-700">
+            Remove <b>{confirmDelete.plantName} — {confirmDelete.size}</b> ({confirmDelete.quantity}{' '}
+            in stock) from inventory? This cannot be undone.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setConfirmDelete(null)}
+              className="flex-1 rounded-2xl border-2 border-gray-300 py-3 font-bold text-gray-600"
+            >
+              Cancel
+            </button>
+            <PrimaryButton
+              onClick={handleDelete}
+              disabled={deleting}
+              className="!bg-red-600 flex-1"
+            >
+              {deleting ? 'Deleting…' : 'Delete'}
+            </PrimaryButton>
+          </div>
         </Modal>
       )}
       {quickAdd && (

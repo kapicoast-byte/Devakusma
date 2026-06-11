@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   onSnapshot,
@@ -87,6 +88,11 @@ export async function addStock(input: {
 /** Update the low-stock threshold for an entry. */
 export async function setThreshold(plantId: string, minThreshold: number): Promise<void> {
   await updateDoc(doc(plantsCol(), plantId), { minThreshold, updatedAt: Date.now() });
+}
+
+/** Delete an inventory entry (one plant + size). */
+export async function deletePlant(plantId: string): Promise<void> {
+  await deleteDoc(doc(plantsCol(), plantId));
 }
 
 /**
