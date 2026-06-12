@@ -40,7 +40,7 @@ export function PrimaryButton({
   return (
     <button
       {...props}
-      className={`w-full rounded-xl bg-[var(--color-leaf)] px-5 py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-[var(--color-leaf-strong)] active:scale-[0.99] disabled:opacity-50 ${props.className ?? ''}`}
+      className={`w-full rounded-xl bg-[var(--color-leaf)] px-5 py-3.5 text-base font-semibold text-white shadow-[var(--shadow-soft)] transition hover:bg-[var(--color-leaf-strong)] active:scale-[0.99] disabled:opacity-50 ${props.className ?? ''}`}
     >
       {children}
     </button>
@@ -100,7 +100,9 @@ export function Select({
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm ${className}`}>
+    <div
+      className={`rounded-2xl border border-[var(--border)] bg-white p-4 shadow-[var(--shadow-soft)] ${className}`}
+    >
       {children}
     </div>
   );
@@ -131,7 +133,7 @@ export function Modal({
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border border-[var(--border)] bg-white p-5 shadow-2xl sm:rounded-2xl"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border border-[var(--border)] bg-white p-5 shadow-[var(--shadow-float)] sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">

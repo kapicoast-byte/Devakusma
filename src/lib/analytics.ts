@@ -76,3 +76,37 @@ export function hasSeasonalData(bills: Bill[]): boolean {
   const months = new Set(bills.map((b) => new Date(b.date).toISOString().slice(0, 7)));
   return months.size >= 3;
 }
+
+/** Average order value across a set of bills. */
+export const averageOrderValue = (bills: Bill[]): number =>
+  bills.length ? revenue(bills) / bills.length : 0;
+
+/** This month vs last month revenue, with percent change. */
+export function monthOverMonth(
+  bills: Bill[],
+  now = new Date(),
+): { current: number; previous: number; changePct: number | null } {
+  const startThis = periodStart('month', now);
+  const prevDate = new Date(startThis);
+  prevDate.setDate(0); // last day of previous month
+  const startPrev = periodStart('month', prevDate);
+  const current = revenue(bills.filter((b) => b.date >= startThis));
+  const previous = revenue(bills.filter((b) => b.date >= startPrev && b.date < startThis));
+  const changePct = previous > 0 ? ((current - previous) / previous) * 100 : null;
+  return { current, previous, changePct };
+}
+
+/** Top customers by total spend. */
+export function topCustomers(bills: Bill[], limit = 5): { name: string; total: number; orders: number }[] {
+  const map = new Map<string, { total: number; orders: number }>();
+  for (const b of bills) {
+    const cur = map.get(b.customerName) ?? { total: 0, orders: 0 };
+    cur.total += b.grandTotal;
+    cur.orders += 1;
+    map.set(b.customerName, cur);
+  }
+  return [...map.entries()]
+    .map(([name, v]) => ({ name, ...v }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, limit);
+}

@@ -1,18 +1,23 @@
 @import 'tailwindcss';
 
 :root {
-  /* Brand */
-  --color-leaf: #15663a; /* primary emerald green */
-  --color-leaf-strong: #0f4c2b; /* hover / pressed */
-  --color-mint: #eef6f1; /* subtle green tint for active/hover surfaces */
-  --color-mint-border: #e5e7eb; /* neutral hairline border (gray-200) */
+  /* Brand — elegant gold */
+  --color-leaf: #a17d27; /* primary gold (accents, buttons, active) */
+  --color-leaf-strong: #846519; /* hover / pressed */
+  --color-mint: #f8f1df; /* pale champagne tint for active/hover surfaces */
+  --color-mint-border: #ece3cd; /* warm hairline border */
 
-  /* Neutrals */
-  --bg: #f7f8f8; /* app background */
+  /* Neutrals (warm) */
+  --bg: #faf8f2; /* warm off-white app background */
   --surface: #ffffff; /* cards, sidebar, topbar */
-  --border: #e5e7eb; /* gray-200 */
-  --text: #111827; /* gray-900 */
-  --muted: #6b7280; /* gray-500 */
+  --border: #eee7d6; /* warm light border */
+  --text: #2a2620; /* warm charcoal */
+  --muted: #8b8472; /* warm gray */
+
+  /* Effects */
+  --gold-grad: linear-gradient(135deg, #c7a24c 0%, #9c7820 100%);
+  --shadow-float: 0 6px 24px rgba(40, 33, 16, 0.07), 0 1px 3px rgba(40, 33, 16, 0.04);
+  --shadow-soft: 0 2px 14px rgba(40, 33, 16, 0.05);
 }
 
 html,
@@ -34,14 +39,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Comfortable tap targets */
 button {
   cursor: pointer;
   min-height: 44px;
 }
 
-/* Subtle, consistent scrollbars */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: #d8cfb8 transparent;
 }

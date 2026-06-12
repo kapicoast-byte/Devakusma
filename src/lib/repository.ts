@@ -13,7 +13,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Bill, BillItem, Plant } from '@/types';
+import type { Bill, BillItem, Expense, Plant } from '@/types';
 import type { CompanyProfile } from './company';
 import { formatInvoiceNo, norm } from './logic';
 
@@ -27,6 +27,7 @@ import { formatInvoiceNo, norm } from './logic';
 // instead of throwing during import.
 const plantsCol = () => collection(db, 'plants');
 const billsCol = () => collection(db, 'bills');
+const expensesCol = () => collection(db, 'expenses');
 
 /** Live subscription to the full inventory (cached & offline-capable). */
 export function watchPlants(cb: (plants: Plant[]) => void): () => void {
@@ -44,6 +45,36 @@ export function watchBills(cb: (bills: Bill[]) => void): () => void {
     bills.sort((a, b) => b.date - a.date);
     cb(bills);
   });
+}
+
+/** Live subscription to all expenses (Accounts section). */
+export function watchExpenses(cb: (expenses: Expense[]) => void): () => void {
+  return onSnapshot(expensesCol(), (snap) => {
+    const expenses = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Expense, 'id'>) }));
+    expenses.sort((a, b) => b.date - a.date);
+    cb(expenses);
+  });
+}
+
+/** Add a business expense. */
+export async function addExpense(input: {
+  category: string;
+  amount: number;
+  note?: string;
+  date?: number;
+}): Promise<void> {
+  await setDoc(doc(expensesCol()), {
+    category: input.category,
+    amount: input.amount,
+    note: input.note,
+    date: input.date ?? Date.now(),
+    createdAt: Date.now(),
+  } satisfies Omit<Expense, 'id'>);
+}
+
+/** Delete an expense. */
+export async function deleteExpense(id: string): Promise<void> {
+  await deleteDoc(doc(expensesCol(), id));
 }
 
 /** Stable doc id for a plant+size so Add-Stock merges instead of duplicating. */

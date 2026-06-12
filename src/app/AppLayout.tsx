@@ -8,6 +8,7 @@ import {
   ReceiptText,
   FileText,
   IndianRupee,
+  Wallet,
   Store,
   LogOut,
 } from 'lucide-react';
@@ -36,6 +37,7 @@ export default function AppLayout() {
     { to: '/bill', label: 'Create Bill', icon: ReceiptText },
     { to: '/bills', label: 'Bills', icon: FileText },
     { to: '/value', label: 'Stock Value', icon: IndianRupee },
+    { to: '/accounts', label: 'Accounts', icon: Wallet },
     { to: '/profile', label: 'Company Profile', icon: Store },
   ];
 
@@ -56,12 +58,15 @@ export default function AppLayout() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-[var(--border)] bg-white shadow-xl transition-transform duration-200 md:static md:z-0 md:shadow-none ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-[var(--border)] bg-white shadow-xl transition-transform duration-200 md:static md:z-0 md:border-r md:shadow-[var(--shadow-soft)] ${
           open ? 'translate-x-0' : '-translate-x-full md:hidden'
         }`}
       >
         <div className="flex items-center gap-3 border-b border-[var(--border)] px-5 py-4">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--color-leaf)] text-lg text-white">
+          <span
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-lg text-white shadow-[var(--shadow-soft)]"
+            style={{ background: 'var(--gold-grad)' }}
+          >
             🌿
           </span>
           <div className="leading-tight">

@@ -24,6 +24,16 @@ export interface BillItem {
   lineTotal: number; // qty * rate
 }
 
+/** A business expense (Accounts section). */
+export interface Expense {
+  id: string;
+  category: string; // e.g. "Plants Purchase", "Labor"
+  amount: number; // ₹
+  note?: string;
+  date: number; // epoch ms
+  createdAt: number;
+}
+
 /** A customer sales bill / invoice. */
 export interface Bill {
   id: string;

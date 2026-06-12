@@ -11,6 +11,7 @@ service cloud.firestore {
 
     match /plants/{id}        { allow read, write: if signedIn(); }
     match /bills/{id}         { allow read, write: if signedIn(); }
+    match /expenses/{id}      { allow read, write: if signedIn(); }
     match /sizeChanges/{id}   { allow read, write: if signedIn(); }
     match /counters/{id}      { allow read, write: if signedIn(); }
     match /settings/{id}      { allow read, write: if signedIn(); }
