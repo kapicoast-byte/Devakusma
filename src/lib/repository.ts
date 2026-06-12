@@ -95,6 +95,14 @@ export async function deletePlant(plantId: string): Promise<void> {
   await deleteDoc(doc(plantsCol(), plantId));
 }
 
+/** Edit an inventory entry — set exact quantity, price and/or threshold. */
+export async function updatePlant(
+  plantId: string,
+  fields: { quantity?: number; sellingPrice?: number; minThreshold?: number },
+): Promise<void> {
+  await updateDoc(doc(plantsCol(), plantId), { ...fields, updatedAt: Date.now() });
+}
+
 /**
  * Bulk import — create or overwrite inventory entries from an uploaded sheet.
  * Each plant+size's quantity/price/threshold is SET to the sheet value

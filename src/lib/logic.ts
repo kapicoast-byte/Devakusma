@@ -43,6 +43,7 @@ export interface PlantGroup {
   plantName: string;
   variants: Plant[];
   totalQuantity: number;
+  totalValue: number;
 }
 export function groupByPlant(plants: Plant[]): PlantGroup[] {
   const map = new Map<string, Plant[]>();
@@ -56,6 +57,7 @@ export function groupByPlant(plants: Plant[]): PlantGroup[] {
       plantName,
       variants: variants.sort((a, b) => a.size.localeCompare(b.size, undefined, { numeric: true })),
       totalQuantity: variants.reduce((s, v) => s + v.quantity, 0),
+      totalValue: variants.reduce((s, v) => s + entryValue(v), 0),
     }))
     .sort((a, b) => a.plantName.localeCompare(b.plantName));
 }

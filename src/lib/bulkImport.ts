@@ -34,6 +34,28 @@ export async function downloadTemplate(): Promise<void> {
   XLSX.writeFile(wb, 'Devakusuma-Inventory-Template.xlsx');
 }
 
+/** Export the current inventory as an Excel file (same columns as the template). */
+export async function exportInventory(
+  plants: { plantName: string; size: string; quantity: number; sellingPrice: number; minThreshold: number }[],
+): Promise<void> {
+  const XLSX = await import('xlsx');
+  const rows = [...plants]
+    .sort((a, b) => a.plantName.localeCompare(b.plantName) || a.size.localeCompare(b.size, undefined, { numeric: true }))
+    .map((p) => ({
+      'Plant Name': p.plantName,
+      Size: p.size,
+      Quantity: p.quantity,
+      'Selling Price': p.sellingPrice,
+      'Min Threshold': p.minThreshold,
+    }));
+  const ws = XLSX.utils.json_to_sheet(rows, { header: HEADERS });
+  ws['!cols'] = [{ wch: 20 }, { wch: 10 }, { wch: 10 }, { wch: 14 }, { wch: 14 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Inventory');
+  const date = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `Devakusuma-Inventory-${date}.xlsx`);
+}
+
 /** Normalise a header for tolerant matching ("Selling Price (₹)" ≈ "selling price"). */
 const normKey = (s: string): string => s.toLowerCase().replace(/[^a-z]/g, '');
 
