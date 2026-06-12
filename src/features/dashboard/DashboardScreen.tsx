@@ -7,8 +7,6 @@ import {
   TrendingDown,
   Package,
   Wallet,
-  PlusCircle,
-  ReceiptText,
 } from 'lucide-react';
 import { Screen, Card, PrimaryButton } from '@/components/ui';
 import { useData } from '@/state/DataProvider';
@@ -96,22 +94,6 @@ export default function DashboardScreen() {
             <div className="text-xl font-bold">{formatRupees(inv.totalValue)}</div>
           </div>
         </Card>
-      </div>
-
-      {/* Quick actions */}
-      <div className="mb-6 grid grid-cols-2 gap-3">
-        <button
-          onClick={() => navigate('/inventory?add=1')}
-          className="flex items-center justify-center gap-2 rounded-2xl bg-[var(--color-leaf)] px-4 py-3 font-bold text-white shadow-md transition active:scale-[0.98]"
-        >
-          <PlusCircle size={20} /> Add Stock
-        </button>
-        <button
-          onClick={() => navigate('/bill')}
-          className="flex items-center justify-center gap-2 rounded-2xl border-2 border-[var(--color-leaf)] px-4 py-3 font-bold text-[var(--color-leaf)] transition active:scale-[0.98]"
-        >
-          <ReceiptText size={20} /> Create Bill
-        </button>
       </div>
 
       {/* Monthly sales trend */}
