@@ -13,7 +13,7 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { db } from './firebase';
-import type { Bill, BillItem, Expense, Plant } from '@/types';
+import type { Bill, BillItem, Customer, CustomerTxn, Expense, Plant } from '@/types';
 import type { CompanyProfile } from './company';
 import { formatInvoiceNo, norm } from './logic';
 
@@ -28,6 +28,8 @@ import { formatInvoiceNo, norm } from './logic';
 const plantsCol = () => collection(db, 'plants');
 const billsCol = () => collection(db, 'bills');
 const expensesCol = () => collection(db, 'expenses');
+const customersCol = () => collection(db, 'customers');
+const customerTxnsCol = () => collection(db, 'customerTxns');
 
 /** Live subscription to the full inventory (cached & offline-capable). */
 export function watchPlants(cb: (plants: Plant[]) => void): () => void {
@@ -75,6 +77,75 @@ export async function addExpense(input: {
 /** Delete an expense. */
 export async function deleteExpense(id: string): Promise<void> {
   await deleteDoc(doc(expensesCol(), id));
+}
+
+// ── Customers & credit (khata) ──
+
+/** Live subscription to all customers (sorted by who owes the most). */
+export function watchCustomers(cb: (customers: Customer[]) => void): () => void {
+  return onSnapshot(customersCol(), (snap) => {
+    const customers = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Customer, 'id'>) }));
+    customers.sort((a, b) => b.balance - a.balance || a.name.localeCompare(b.name));
+    cb(customers);
+  });
+}
+
+/** Add a new customer (no credit yet). */
+export async function addCustomer(input: { name: string; mobile?: string }): Promise<void> {
+  await setDoc(doc(customersCol()), {
+    name: input.name.trim(),
+    mobile: input.mobile?.trim() || undefined,
+    balance: 0,
+    updatedAt: Date.now(),
+    createdAt: Date.now(),
+  } satisfies Omit<Customer, 'id'>);
+}
+
+/** Delete a customer (does not remove their past ledger entries). */
+export async function deleteCustomer(id: string): Promise<void> {
+  await deleteDoc(doc(customersCol(), id));
+}
+
+/** Set or clear the date a customer must pay by. */
+export async function setCustomerDueDate(id: string, dueDate: number | undefined): Promise<void> {
+  await updateDoc(doc(customersCol(), id), { dueDate, updatedAt: Date.now() });
+}
+
+/**
+ * Record credit given (`charge`) or a payment received (`payment`).
+ * Updates the running balance and writes a ledger entry atomically.
+ */
+export async function recordCustomerTxn(input: {
+  customerId: string;
+  type: 'charge' | 'payment';
+  amount: number;
+  note?: string;
+}): Promise<void> {
+  const custRef = doc(customersCol(), input.customerId);
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(custRef);
+    if (!snap.exists()) throw new Error('Customer not found.');
+    const cur = snap.data() as Customer;
+    const delta = input.type === 'charge' ? input.amount : -input.amount;
+    const balance = Math.max(0, (cur.balance ?? 0) + delta);
+    tx.update(custRef, { balance, updatedAt: Date.now() });
+    tx.set(doc(customerTxnsCol()), {
+      customerId: input.customerId,
+      type: input.type,
+      amount: input.amount,
+      note: input.note,
+      date: Date.now(),
+    } satisfies Omit<CustomerTxn, 'id'>);
+  });
+}
+
+/** Live subscription to a single customer's ledger entries (newest first). */
+export function watchCustomerTxns(customerId: string, cb: (txns: CustomerTxn[]) => void): () => void {
+  return onSnapshot(query(customerTxnsCol(), where('customerId', '==', customerId)), (snap) => {
+    const txns = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CustomerTxn, 'id'>) }));
+    txns.sort((a, b) => b.date - a.date);
+    cb(txns);
+  });
 }
 
 /** Stable doc id for a plant+size so Add-Stock merges instead of duplicating. */

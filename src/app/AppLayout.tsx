@@ -9,6 +9,7 @@ import {
   FileText,
   IndianRupee,
   Wallet,
+  Users,
   Store,
   LogOut,
 } from 'lucide-react';
@@ -38,6 +39,7 @@ export default function AppLayout() {
     { to: '/bills', label: 'Bills', icon: FileText },
     { to: '/value', label: 'Stock Value', icon: IndianRupee },
     { to: '/accounts', label: 'Accounts', icon: Wallet },
+    { to: '/customers', label: 'Customers', icon: Users },
     { to: '/profile', label: 'Company Profile', icon: Store },
   ];
 

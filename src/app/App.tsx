@@ -7,6 +7,7 @@ import CreateBillScreen from '@/features/billing/CreateBillScreen';
 import BillsScreen from '@/features/billing/BillsScreen';
 import StockValueScreen from '@/features/stockValue/StockValueScreen';
 import AccountsScreen from '@/features/accounts/AccountsScreen';
+import CustomersScreen from '@/features/customers/CustomersScreen';
 import CompanyProfileScreen from '@/features/company/CompanyProfileScreen';
 import { useData } from '@/state/DataProvider';
 
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/bills" element={<BillsScreen />} />
         <Route path="/value" element={<StockValueScreen />} />
         <Route path="/accounts" element={<AccountsScreen />} />
+        <Route path="/customers" element={<CustomersScreen />} />
         <Route path="/profile" element={<CompanyProfileScreen />} />
       </Route>
     </Routes>

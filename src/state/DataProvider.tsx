@@ -1,8 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import type { Bill, Expense, Plant } from '@/types';
+import type { Bill, Customer, Expense, Plant } from '@/types';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, isFirebaseConfigured, signInWithGoogle, signOutUser } from '@/lib/firebase';
-import { watchBills, watchPlants, watchCompany, watchExpenses } from '@/lib/repository';
+import {
+  watchBills,
+  watchPlants,
+  watchCompany,
+  watchExpenses,
+  watchCustomers,
+} from '@/lib/repository';
 import { lowStockEntries } from '@/lib/logic';
 import {
   DEFAULT_COMPANY,
@@ -14,6 +20,7 @@ interface DataContextValue {
   plants: Plant[];
   bills: Bill[];
   expenses: Expense[];
+  customers: Customer[];
   loading: boolean;
   lowStock: Plant[];
   configured: boolean;
@@ -33,6 +40,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [plants, setPlants] = useState<Plant[]>([]);
   const [bills, setBills] = useState<Bill[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
@@ -50,6 +58,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     let unsubBills = () => {};
     let unsubCompany = () => {};
     let unsubExpenses = () => {};
+    let unsubCustomers = () => {};
     const unsubAuth = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setAuthChecked(true);
@@ -57,10 +66,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
       unsubBills();
       unsubCompany();
       unsubExpenses();
+      unsubCustomers();
       if (!u) {
         setPlants([]);
         setBills([]);
         setExpenses([]);
+        setCustomers([]);
         setLoading(false);
         return;
       }
@@ -71,6 +82,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       });
       unsubBills = watchBills(setBills);
       unsubExpenses = watchExpenses(setExpenses);
+      unsubCustomers = watchCustomers(setCustomers);
       unsubCompany = watchCompany((profile) => {
         const merged = { ...DEFAULT_COMPANY, ...profile };
         setCompany(merged);
@@ -83,6 +95,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       unsubBills();
       unsubCompany();
       unsubExpenses();
+      unsubCustomers();
     };
   }, []);
 
@@ -91,6 +104,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       plants,
       bills,
       expenses,
+      customers,
       loading,
       lowStock: lowStockEntries(plants),
       configured: isFirebaseConfigured,
@@ -100,7 +114,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       signIn: signInWithGoogle,
       signOut: signOutUser,
     }),
-    [plants, bills, expenses, loading, user, authChecked, company],
+    [plants, bills, expenses, customers, loading, user, authChecked, company],
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

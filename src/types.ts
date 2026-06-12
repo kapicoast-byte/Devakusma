@@ -24,6 +24,27 @@ export interface BillItem {
   lineTotal: number; // qty * rate
 }
 
+/** A customer with an outstanding credit balance (khata). */
+export interface Customer {
+  id: string;
+  name: string;
+  mobile?: string;
+  balance: number; // outstanding credit owed (₹)
+  dueDate?: number; // epoch ms — the day they have to pay
+  updatedAt: number;
+  createdAt: number;
+}
+
+/** A ledger entry against a customer (credit given or payment received). */
+export interface CustomerTxn {
+  id: string;
+  customerId: string;
+  type: 'charge' | 'payment';
+  amount: number;
+  note?: string;
+  date: number;
+}
+
 /** A business expense (Accounts section). */
 export interface Expense {
   id: string;
