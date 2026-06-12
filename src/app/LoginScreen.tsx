@@ -20,27 +20,34 @@ export default function LoginScreen() {
   }
 
   return (
-    <div className="flex min-h-full flex-col items-center justify-center bg-[var(--color-mint)] px-6 text-center">
-      <div className="mb-6 text-6xl">🌿</div>
-      <h1 className="text-3xl font-extrabold text-[var(--color-leaf)]">Devakusuma Nursery Gardens</h1>
-      <p className="mb-8 mt-2 text-gray-600">Sign in to manage your nursery.</p>
-
-      {!configured ? (
-        <div className="max-w-sm rounded-xl border-2 border-amber-300 bg-amber-50 p-4 text-amber-900">
-          Firebase isn't connected yet. Add your Firebase keys to enable sign-in.
+    <div className="flex min-h-full items-center justify-center bg-[var(--bg)] px-5">
+      <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-white p-8 text-center shadow-sm">
+        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--color-mint)] text-4xl">
+          🌿
         </div>
-      ) : (
-        <>
-          <button
-            onClick={handleSignIn}
-            disabled={busy}
-            className="flex items-center justify-center gap-3 rounded-2xl border-2 border-[var(--color-leaf)] bg-white px-8 py-4 text-lg font-bold text-[var(--color-leaf)] shadow-md transition active:scale-[0.98] disabled:opacity-50"
-          >
-            <LogIn /> {busy ? 'Signing in…' : 'Sign in with Google'}
-          </button>
-          {error && <p className="mt-4 max-w-sm font-semibold text-red-600">{error}</p>}
-        </>
-      )}
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          Devakusuma Nursery Gardens
+        </h1>
+        <p className="mb-7 mt-1.5 text-gray-500">Sign in to manage your nursery.</p>
+
+        {!configured ? (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            Firebase isn't connected yet. Add your Firebase keys to enable sign-in.
+          </div>
+        ) : (
+          <>
+            <button
+              onClick={handleSignIn}
+              disabled={busy}
+              className="flex w-full items-center justify-center gap-3 rounded-xl border border-[var(--border)] bg-white px-6 py-3.5 text-base font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 active:scale-[0.99] disabled:opacity-50"
+            >
+              <LogIn size={20} className="text-[var(--color-leaf)]" />
+              {busy ? 'Signing in…' : 'Sign in with Google'}
+            </button>
+            {error && <p className="mt-4 text-sm font-semibold text-red-600">{error}</p>}
+          </>
+        )}
+      </div>
     </div>
   );
 }

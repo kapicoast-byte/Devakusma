@@ -20,11 +20,11 @@ export function Screen({
   children: ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6">
-      <div className="mb-5 flex items-start justify-between gap-3">
+    <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:py-8">
+      <div className="mb-6 flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
-          {subtitle && <p className="mt-0.5 text-gray-500">{subtitle}</p>}
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">{title}</h1>
+          {subtitle && <p className="mt-1 text-[15px] text-gray-500">{subtitle}</p>}
         </div>
         {actions}
       </div>
@@ -40,7 +40,7 @@ export function PrimaryButton({
   return (
     <button
       {...props}
-      className={`w-full rounded-2xl bg-[var(--color-leaf)] px-5 py-4 text-lg font-bold text-white shadow-md transition active:scale-[0.98] disabled:opacity-50 ${props.className ?? ''}`}
+      className={`w-full rounded-xl bg-[var(--color-leaf)] px-5 py-3.5 text-base font-semibold text-white shadow-sm transition hover:bg-[var(--color-leaf-strong)] active:scale-[0.99] disabled:opacity-50 ${props.className ?? ''}`}
     >
       {children}
     </button>
@@ -53,10 +53,10 @@ export function Field({
 }: InputHTMLAttributes<HTMLInputElement> & { label: string }) {
   return (
     <label className="mb-4 block">
-      <span className="mb-1 block text-base font-semibold text-gray-700">{label}</span>
+      <span className="mb-1.5 block text-sm font-medium text-gray-600">{label}</span>
       <input
         {...props}
-        className="w-full rounded-xl border-2 border-[var(--color-mint-border)] bg-white px-4 py-3 text-lg outline-none focus:border-[var(--color-leaf)]"
+        className="w-full rounded-xl border border-[var(--border)] bg-white px-3.5 py-2.5 text-base text-gray-900 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-[var(--color-leaf)] focus:ring-4 focus:ring-[var(--color-leaf)]/10"
       />
     </label>
   );
@@ -74,13 +74,13 @@ export function Select({
 }) {
   return (
     <label className="mb-4 block">
-      <span className="mb-1 block text-base font-semibold text-gray-700">{label}</span>
+      <span className="mb-1.5 block text-sm font-medium text-gray-600">{label}</span>
       <select
         {...props}
-        className="w-full appearance-none rounded-xl border-2 border-[var(--color-mint-border)] bg-white bg-[right_0.75rem_center] bg-no-repeat px-4 py-3 text-lg outline-none focus:border-[var(--color-leaf)]"
+        className="w-full appearance-none rounded-xl border border-[var(--border)] bg-white bg-[right_0.75rem_center] bg-no-repeat px-3.5 py-2.5 text-base text-gray-900 shadow-sm outline-none transition focus:border-[var(--color-leaf)] focus:ring-4 focus:ring-[var(--color-leaf)]/10"
         style={{
           backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%231B5E20' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
         }}
       >
         {placeholder && (
@@ -100,7 +100,7 @@ export function Select({
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`rounded-2xl border-2 border-[var(--color-mint-border)] bg-white p-4 shadow-sm ${className}`}>
+    <div className={`rounded-2xl border border-[var(--border)] bg-white p-4 shadow-sm ${className}`}>
       {children}
     </div>
   );
@@ -127,17 +127,21 @@ export function Modal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-gray-900/50 backdrop-blur-[2px] sm:items-center sm:p-4"
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-[var(--color-mint)] p-4 shadow-xl sm:rounded-3xl"
+        className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-3xl border border-[var(--border)] bg-white p-5 shadow-2xl sm:rounded-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-          <button onClick={onClose} aria-label="Close" className="rounded-full p-2 hover:bg-black/5">
-            <X size={22} />
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="rounded-lg p-1.5 text-gray-500 transition hover:bg-gray-100"
+          >
+            <X size={20} />
           </button>
         </div>
         {children}

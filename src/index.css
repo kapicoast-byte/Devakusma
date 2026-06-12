@@ -1,11 +1,18 @@
 @import 'tailwindcss';
 
 :root {
-  /* Nursery green theme (from PRD) */
-  --color-leaf: #1b5e20;
-  --color-leaf-light: #2e7d32;
-  --color-mint: #e8f5e9;
-  --color-mint-border: #a5d6a7;
+  /* Brand */
+  --color-leaf: #15663a; /* primary emerald green */
+  --color-leaf-strong: #0f4c2b; /* hover / pressed */
+  --color-mint: #eef6f1; /* subtle green tint for active/hover surfaces */
+  --color-mint-border: #e5e7eb; /* neutral hairline border (gray-200) */
+
+  /* Neutrals */
+  --bg: #f7f8f8; /* app background */
+  --surface: #ffffff; /* cards, sidebar, topbar */
+  --border: #e5e7eb; /* gray-200 */
+  --text: #111827; /* gray-900 */
+  --muted: #6b7280; /* gray-500 */
 }
 
 html,
@@ -16,16 +23,25 @@ body,
 
 body {
   margin: 0;
-  /* Large, readable text — PRD design rule (min 16pt) */
-  font-size: 17px;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-  color: #212121;
-  background: var(--color-mint);
+  font-size: 16px;
+  line-height: 1.5;
+  font-family:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Big tap targets everywhere */
+/* Comfortable tap targets */
 button {
   cursor: pointer;
-  min-height: 48px;
+  min-height: 44px;
+}
+
+/* Subtle, consistent scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }

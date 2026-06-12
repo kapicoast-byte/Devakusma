@@ -15,7 +15,7 @@ export default function App() {
   // Wait for Firebase to report the initial auth state to avoid a login flash.
   if (configured && !authChecked) {
     return (
-      <div className="flex min-h-full items-center justify-center bg-[var(--color-mint)] text-gray-500">
+      <div className="flex min-h-full items-center justify-center bg-[var(--bg)] text-gray-500">
         Loading…
       </div>
     );
